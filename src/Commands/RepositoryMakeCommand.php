@@ -49,13 +49,12 @@ class RepositoryMakeCommand extends GeneratorCommand
 
         // generate event classes if passed --event flag
         $eventClasses = ['Created', 'PermanentlyDeleted', 'Updated', 'Restored', 'Deleted'];
-        collect($eventClasses)->each(function ($class){
+        collect($eventClasses)->each(function ($class) {
             Artisan::call('make:api-event', [
                 'name' => $this->getModelName() . $class,
                 '--model' => $this->getModelName(),
             ]);
         });
-
     }
 
     /**
@@ -76,7 +75,9 @@ class RepositoryMakeCommand extends GeneratorCommand
         $replace = $this->buildModelReplacements($replace);
 
         return str_replace(
-            array_keys($replace), array_values($replace), parent::buildClass($name)
+            array_keys($replace),
+            array_values($replace),
+            parent::buildClass($name)
         );
     }
 
@@ -97,13 +98,15 @@ class RepositoryMakeCommand extends GeneratorCommand
 
     protected function getModelName()
     {
-        if(!$this->option('model')) {
+        if (! $this->option('model')) {
             // get model from name
-            $name = $this->getNameInput();;
+            $name = $this->getNameInput();
+            ;
             throw_if(substr($name, -10) !== 'Repository', InvalidArgumentException::class, "Name should follow the convention: {model}Repository");
 
             return str_replace('Repository', "", $name);
         }
+
         return $this->option('model');
     }
 

@@ -2,8 +2,8 @@
 
 namespace Acadea\Boilerplate;
 
-use Illuminate\Support\ServiceProvider;
 use Acadea\Boilerplate\Commands\RepositoryMakeCommand;
+use Illuminate\Support\ServiceProvider;
 
 class BoilerplateServiceProvider extends ServiceProvider
 {

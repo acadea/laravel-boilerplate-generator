@@ -2,8 +2,8 @@
 
 namespace Acadea\Boilerplate\Tests;
 
-use Orchestra\Testbench\TestCase as Orchestra;
 use Acadea\Boilerplate\BoilerplateServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {

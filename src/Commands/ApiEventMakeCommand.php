@@ -5,7 +5,6 @@ namespace Acadea\Boilerplate\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
@@ -67,7 +66,9 @@ class ApiEventMakeCommand extends GeneratorCommand
         $replace = $this->buildModelReplacements($replace);
 
         return str_replace(
-            array_keys($replace), array_values($replace), parent::buildClass($name)
+            array_keys($replace),
+            array_values($replace),
+            parent::buildClass($name)
         );
     }
 
@@ -88,13 +89,15 @@ class ApiEventMakeCommand extends GeneratorCommand
 
     protected function getModelName()
     {
-        if(!$this->option('model')) {
+        if (! $this->option('model')) {
             // get model from name
             $name = $this->getNameInput();
             $exploded = explode('_', Str::snake(Str::camel($name)));
             $sliced = array_slice(array_map([Str::class, 'ucfirst'], $exploded), 0, sizeof($exploded) - 1);
+
             return implode('', $sliced);
         }
+
         return $this->option('model');
     }
 
@@ -136,6 +139,4 @@ class ApiEventMakeCommand extends GeneratorCommand
             ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this repository is based on.'],
         ];
     }
-
-
 }
