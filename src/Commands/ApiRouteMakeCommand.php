@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
 
-class RepositoryMakeCommand extends GeneratorCommand
+class ApiRouteMakeCommand extends GeneratorCommand
 {
     /**
      * Get the stub file for the generator.
@@ -19,7 +19,25 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return $this->laravel->basePath(trim('/stubs/repository.stub', '/'));
+        $stub = '/stubs/route.stub';
+        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
+            ? $customPath
+            : __DIR__. '/..' . $stub;
+    }
+
+    /**
+     * Get the destination class path.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getPath($name)
+    {
+        $name = Str::replaceFirst($this->rootNamespace(), '', $name);
+
+        $kebab =  Str::kebab(Str::camel($name));
+
+        return $this->laravel['path'].'/routes/api/v1/'.str_replace('\\', '/', $kebab).'.php';
     }
 
     /**
@@ -27,16 +45,16 @@ class RepositoryMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'boilerplate:repository {name} {--model= : The model that this repo based on.}';
+    protected $signature = 'boilerplate:route {name} {--model= : The model that this repo based on.}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new Repository';
+    protected $description = 'Create a new Route';
 
-    protected $type = 'Repository';
+    protected $type = 'Route';
 
     /**
      * Execute the console command.
@@ -48,17 +66,6 @@ class RepositoryMakeCommand extends GeneratorCommand
         parent::handle();
 
 
-    }
-
-    /**
-     * Get the default namespace for the class.
-     *
-     * @param  string  $rootNamespace
-     * @return string
-     */
-    protected function getDefaultNamespace($rootNamespace)
-    {
-        return $rootNamespace.'\Repositories\Api\V1\\';
     }
 
     public function buildClass($name)
@@ -95,9 +102,7 @@ class RepositoryMakeCommand extends GeneratorCommand
             // get model from name
             $name = $this->getNameInput();
 
-            throw_if(substr($name, -10) !== 'Repository', InvalidArgumentException::class, "Name should follow the convention: {model}Repository");
-
-            return str_replace('Repository', "", $name);
+            return Str::studly($name);
         }
 
         return $this->option('model');
@@ -138,7 +143,7 @@ class RepositoryMakeCommand extends GeneratorCommand
     protected function getOptions()
     {
         return [
-            ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this repository is based on.'],
+            ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this route is based on.'],
         ];
     }
 }

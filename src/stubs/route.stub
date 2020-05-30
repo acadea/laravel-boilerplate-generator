@@ -1,0 +1,9 @@
+<?php
+
+use App\Http\Controllers\Api\V1\{{ model }}Controller;
+
+Route::get('{{ modelVariable }}s', [{{ model }}Controller::class, 'index']);
+Route::post('{{ modelVariable }}s', [{{ model }}Controller::class, 'store']);
+Route::get('{{ modelVariable }}s/{{{ modelVariable }}}', [{{ model }}Controller::class, 'show']);
+Route::patch('{{ modelVariable }}s/{{{ modelVariable }}}', [{{ model }}Controller::class, 'update']);
+Route::delete('{{ modelVariable }}s/{{{ modelVariable }}}', [{{ model }}Controller::class, 'destroy']);

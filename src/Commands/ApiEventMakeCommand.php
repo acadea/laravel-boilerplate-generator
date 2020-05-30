@@ -27,7 +27,7 @@ class ApiEventMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'make:api-event {name} {--model= : The model that this event based on.}';
+    protected $signature = 'boilerplate:api-event {name} {--model= : The model that this event based on.}';
 
     /**
      * The console command description.
