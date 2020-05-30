@@ -15,7 +15,6 @@ class BoilerplateServiceProvider extends ServiceProvider
     public function boot()
     {
         if ($this->app->runningInConsole()) {
-
             $this->publishes([
                 __DIR__ . '/../config/boilerplate.php' => config_path('boilerplate.php'),
             ], 'config');
@@ -50,8 +49,7 @@ class BoilerplateServiceProvider extends ServiceProvider
 
     public function registerCreator()
     {
-        $this->app->singleton(MigrationCreator::class, function($app){
-
+        $this->app->singleton(MigrationCreator::class, function ($app) {
             $stubPath = file_exists($customPath = $app->basePath(trim('stubs', '/')))
                 ? $customPath
                 : __DIR__. '/stubs';

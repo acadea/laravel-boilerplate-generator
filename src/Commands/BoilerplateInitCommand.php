@@ -3,11 +3,6 @@
 namespace Acadea\Boilerplate\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Console\GeneratorCommand;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Str;
-use InvalidArgumentException;
-use Symfony\Component\Console\Input\InputOption;
 
 class BoilerplateInitCommand extends Command
 {
@@ -35,8 +30,5 @@ class BoilerplateInitCommand extends Command
     public function handle()
     {
         // TODO: complete this.
-
     }
-
-
 }

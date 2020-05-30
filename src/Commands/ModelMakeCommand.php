@@ -2,10 +2,8 @@
 
 namespace Acadea\Boilerplate\Commands;
 
-use Illuminate\Console\GeneratorCommand;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
-use Symfony\Component\Console\Input\InputOption;
 
 class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 {
@@ -76,23 +74,22 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
      */
     public function handle()
     {
-
         if ($this->handleInit() === false && ! $this->option('force')) {
             return ;
         }
 
-        if($this->option('all')){
+        if ($this->option('all')) {
             $name = Str::studly(class_basename($this->argument('name')));
 
             // create resource class
             $this->call('make:resource', [
-                'name' => $name.'Resource'
+                'name' => $name.'Resource',
             ]);
 
 
             // generate event classes if passed --event flag
             $eventClasses = ['Created', 'PermanentlyDeleted', 'Updated', 'Restored', 'Deleted'];
-            collect($eventClasses)->each(function ($class) use($name){
+            collect($eventClasses)->each(function ($class) use ($name) {
                 Artisan::call('boilerplate:api-event', [
                     'name' => $name . $class,
                     '--model' => $name,
@@ -106,11 +103,8 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
             // create routes
             $this->call('boilerplate:route', [
-                'name' => $name
+                'name' => $name,
             ]);
-
-
-
         }
 
         if ($this->option('all')) {
@@ -137,7 +131,6 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             $this->createController();
 
             // create requests files
-
         }
     }
 
@@ -186,7 +179,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $modelName = $this->qualifyClass($this->getNameInput());
 
         $this->call('make:controller', array_filter([
-            'name'  => "{$controller}Controller",
+            'name' => "{$controller}Controller",
             '--model' => $this->option('resource') || $this->option('api') ? $modelName : null,
             '--api' => $this->option('api'),
         ]));
@@ -216,6 +209,4 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
                         ? $customPath
                         : __DIR__. '/..' . $stub;
     }
-
-
 }

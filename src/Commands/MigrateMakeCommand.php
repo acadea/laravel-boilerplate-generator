@@ -2,8 +2,8 @@
 
 namespace Acadea\Boilerplate\Commands;
 
-use Illuminate\Database\Console\Migrations\TableGuesser;
 use Acadea\Boilerplate\Utils\MigrationCreator;
+use Illuminate\Database\Console\Migrations\TableGuesser;
 use Illuminate\Support\Composer;
 use Illuminate\Support\Str;
 
@@ -108,7 +108,10 @@ class MigrateMakeCommand extends \Illuminate\Database\Console\Migrations\Migrate
     protected function writeMigration($name, $table, $create)
     {
         $file = $this->creator->create(
-            $name, $this->getMigrationPath(), $table, $create
+            $name,
+            $this->getMigrationPath(),
+            $table,
+            $create
         );
 
         if (! $this->option('fullpath')) {

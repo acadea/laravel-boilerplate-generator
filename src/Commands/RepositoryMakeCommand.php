@@ -5,7 +5,6 @@ namespace Acadea\Boilerplate\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
@@ -48,8 +47,6 @@ class RepositoryMakeCommand extends GeneratorCommand
     public function handle()
     {
         parent::handle();
-
-
     }
 
     /**
