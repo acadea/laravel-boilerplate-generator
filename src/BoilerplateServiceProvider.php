@@ -4,8 +4,10 @@ namespace Acadea\Boilerplate;
 
 use Acadea\Boilerplate\Commands\ApiEventMakeCommand;
 use Acadea\Boilerplate\Commands\ApiRouteMakeCommand;
+use Acadea\Boilerplate\Commands\MigrateMakeCommand;
 use Acadea\Boilerplate\Commands\ModelMakeCommand;
 use Acadea\Boilerplate\Commands\RepositoryMakeCommand;
+use Acadea\Boilerplate\Utils\MigrationCreator;
 use Illuminate\Support\ServiceProvider;
 
 class BoilerplateServiceProvider extends ServiceProvider
@@ -33,6 +35,7 @@ class BoilerplateServiceProvider extends ServiceProvider
                 ApiEventMakeCommand::class,
                 ModelMakeCommand::class,
                 ApiRouteMakeCommand::class,
+                MigrateMakeCommand::class,
             ]);
         }
 
@@ -42,5 +45,18 @@ class BoilerplateServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/boilerplate.php', 'boilerplate');
+        $this->registerCreator();
+    }
+
+    public function registerCreator()
+    {
+        $this->app->singleton(MigrationCreator::class, function($app){
+
+            $stubPath = file_exists($customPath = $app->basePath(trim('stubs', '/')))
+                ? $customPath
+                : __DIR__. '/stubs';
+
+            return new MigrationCreator($app['files'], $stubPath);
+        });
     }
 }

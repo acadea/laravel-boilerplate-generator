@@ -9,6 +9,6 @@ return [
     ],
     'paths' => [
         'api-routes' => '/routes/api/v1',
-        ''
+        'schema-structure' => '/database/schema.php'
     ]
 ];

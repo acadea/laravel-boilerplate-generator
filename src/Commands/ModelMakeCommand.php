@@ -122,7 +122,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             $table = Str::singular($table);
         }
 
-        $this->call('make:migration', [
+        $this->call('boilerplate:migration', [
             'name' => "create_{$table}_table",
             '--create' => $table,
         ]);
