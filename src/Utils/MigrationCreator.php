@@ -72,7 +72,9 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
             ]
         ];
 
-        $fields = data_get($structure, strtolower($table));
+        dump($table);
+
+        $fields = data_get($structure, strtolower(Str::singular($table)));
 
         $strings = collect($fields)->map(function ($props, $fieldName){
 
@@ -100,6 +102,7 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
 
 
         });
+        dump($strings);
         return implode("\n", array_values($strings->toArray()));
 
     }

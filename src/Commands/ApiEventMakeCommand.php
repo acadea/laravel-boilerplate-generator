@@ -19,6 +19,10 @@ class ApiEventMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
+        return file_exists($customPath = $this->laravel->basePath(trim('/stubs/event.api.stub', '/')))
+            ? $customPath
+            : __DIR__. '/..' . '/stubs/event.api.stub';
+
         return $this->laravel->basePath(trim('/stubs/event.api.stub', '/'));
     }
 
