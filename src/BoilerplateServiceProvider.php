@@ -13,7 +13,6 @@ class BoilerplateServiceProvider extends ServiceProvider
     public function boot()
     {
         if ($this->app->runningInConsole()) {
-
             $this->publishes([
                 __DIR__ . '/../config/boilerplate.php' => config_path('boilerplate.php'),
             ], 'config');

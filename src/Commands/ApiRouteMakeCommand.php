@@ -5,7 +5,6 @@ namespace Acadea\Boilerplate\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,6 +19,7 @@ class ApiRouteMakeCommand extends GeneratorCommand
     protected function getStub()
     {
         $stub = '/stubs/route.stub';
+
         return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
             ? $customPath
             : __DIR__. '/..' . $stub;
@@ -35,7 +35,7 @@ class ApiRouteMakeCommand extends GeneratorCommand
     {
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
 
-        $kebab =  Str::kebab(Str::camel($name));
+        $kebab = Str::kebab(Str::camel($name));
 
         return $this->laravel['path'].'/routes/api/v1/'.str_replace('\\', '/', $kebab).'.php';
     }
@@ -64,8 +64,6 @@ class ApiRouteMakeCommand extends GeneratorCommand
     public function handle()
     {
         parent::handle();
-
-
     }
 
     public function buildClass($name)
