@@ -46,33 +46,12 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
     protected function generateFieldsString($table)
     {
         // To read the file where the schema structure is defined.
-//        if(!file_exists(config('boilerplate.paths.schema-structure'))){
-//            throw new FileNotFoundException('Schema structure file not found. Please define the path to schema structure in config.');
-//        }
-//        $structure = require config('boilerplate.paths.schema-structure');
+        if(!file_exists(config('boilerplate.paths.schema-structure'))){
+            throw new FileNotFoundException('Schema structure file not found. Please define the path to schema structure in config.');
+        }
+        $structure = require config('boilerplate.paths.schema-structure');
 
-        $structure = [
-            'post' => [
-                'title' => [
-                    'type' => 'string',
-                    'attributes' => ['nullable'],
-                ],
-                'body' => [
-                    'type' => 'mediumText',
-                    'attributes' => ['nullable'],
-                ],
-                'author_id' => [
-                    'type' => 'foreignId',
-                    'foreign' => [
-                        'references' => 'id',
-                        'on' => 'authors',
-                    ],
-                ],
 
-            ],
-        ];
-
-        dump($table);
 
         $fields = data_get($structure, strtolower(Str::singular($table)));
 

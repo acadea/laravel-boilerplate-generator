@@ -30,5 +30,14 @@ class BoilerplateInitCommand extends Command
     public function handle()
     {
         // TODO: complete this.
+
+        // create exception class -- GeneralJsonException
+
+        // create db trait: truncate table and disable/enable foreign key
+
+        // create base repository
+
+        // create base crud repository
+
     }
 }

@@ -2,8 +2,10 @@
 
 namespace Acadea\Boilerplate\Commands;
 
+use Acadea\Boilerplate\Utils\SchemaStructure;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
+use League\Flysystem\FileNotFoundException;
 
 class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 {
@@ -62,7 +64,15 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         // stub files so that it gets the correctly formatted namespace and class name.
         $this->makeDirectory($path);
 
-        $this->files->put($path, $this->sortImports($this->buildClass($name)));
+        $content = $this->buildClass($name);
+
+        $content = $this->replaceFillables($content, $this->getNameInput());
+
+        $content = $this->replaceCasts($content, $this->getNameInput());
+
+        $content = $this->replaceRelations($content, $this->getNameInput());
+
+        $this->files->put($path, $this->sortImports($content));
 
         $this->info($this->type.' created successfully.');
     }
@@ -186,18 +196,6 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     }
 
     /**
-     * Get the stub file for the generator.
-     *
-     * @return string
-     */
-    protected function getStub()
-    {
-        return $this->option('pivot')
-                    ? $this->resolveStubPath('/stubs/model.pivot.stub')
-                    : $this->resolveStubPath('/stubs/model.stub');
-    }
-
-    /**
      * Resolve the fully-qualified path to the stub.
      *
      * @param  string  $stub
@@ -209,4 +207,71 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
                         ? $customPath
                         : __DIR__. '/..' . $stub;
     }
+
+    protected function getModelFields($modelName)
+    {
+        return data_get(SchemaStructure::get(), strtolower(Str::singular($modelName)));
+    }
+
+    protected function replaceFillables($stub, $name)
+    {
+        // generate the fields
+        $fields = array_keys($this->getModelFields($name));
+
+        $fillables = collect($fields)->map(function ($field){
+            return '\'' . $field . '\'';
+        });
+
+        return str_replace(['{{ fillables }}', '{{fillables}}'], $fillables->join(','), $stub );
+
+    }
+
+    protected function replaceCasts($stub, $name)
+    {
+        $fields = $this->getModelFields($name);
+
+        // filter timestamp and json fields
+        $fields = collect($fields)->filter(function ($field){
+            // check if field is date time or json
+            $type = data_get($field, 'type');
+            return  $type === 'timestamp' || $type === 'json';
+        })->map(function ($field, $fieldName){
+            $cast = data_get($field, 'type') === 'json' ? 'array' : 'timestamp';
+            return '\'' . $fieldName . '\' => \'' . $cast . '\'';
+        });
+
+        return str_replace(['{{ casts }}', '{{casts}}'], $fields->join(','), $stub);
+    }
+
+    protected function replaceRelations($stub, $name)
+    {
+        $fields = $this->getModelFields($name);
+
+        $generateRelationFunction = function ($fieldName) use($name){
+
+            // fieldname should be snakecase
+            $camelName = Str::camel($fieldName);
+            $fieldName = Str::snake($camelName);
+            $exploded = explode('_', $fieldName);
+            // get rid of last element, which is usually 'id'
+            $relationName = implode('_', array_slice($exploded, 0, sizeof($exploded) - 1));
+
+            return 'public function ' . $relationName . '()' .
+                '{' .
+                '    return $this->belongsTo(\\App\\Models\\'.Str::studly($name).'::class, \''. $fieldName .'\');' .
+                '}';
+
+        };
+
+        $fields = collect($fields)->filter(function ($field){
+            return data_get($field, 'foreign');
+        })->map(function ($field, $fieldName)use($generateRelationFunction){
+            // TODO: what about pivot table?
+            // fieldName looks something like author_id
+            return $generateRelationFunction($fieldName);
+
+        });
+        return str_replace(['{{ relations }}', '{{relations}}'], $fields->join("\n"), $stub);
+    }
+
 }
