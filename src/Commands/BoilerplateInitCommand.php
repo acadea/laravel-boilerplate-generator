@@ -35,7 +35,6 @@ class BoilerplateInitCommand extends GeneratorCommand
 
     protected function getStub()
     {
-
     }
 
 
@@ -58,7 +57,7 @@ class BoilerplateInitCommand extends GeneratorCommand
         ];
 
         dump('Installing composer packages..');
-        collect($packages)->each(function ($package){
+        collect($packages)->each(function ($package) {
             $this->composer->run(['require', $package]);
         });
 
