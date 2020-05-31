@@ -3,7 +3,6 @@
 
 namespace Acadea\Boilerplate\Exceptions;
 
-
 use Exception;
 use Throwable;
 

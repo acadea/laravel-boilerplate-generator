@@ -5,7 +5,6 @@ namespace Acadea\Boilerplate\Commands;
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
-use League\Flysystem\FileNotFoundException;
 
 class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 {
@@ -218,12 +217,11 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         // generate the fields
         $fields = array_keys($this->getModelFields($name));
 
-        $fillables = collect($fields)->map(function ($field){
+        $fillables = collect($fields)->map(function ($field) {
             return '\'' . $field . '\'';
         });
 
-        return str_replace(['{{ fillables }}', '{{fillables}}'], $fillables->join(','), $stub );
-
+        return str_replace(['{{ fillables }}', '{{fillables}}'], $fillables->join(','), $stub);
     }
 
     protected function replaceCasts($stub, $name)
@@ -231,12 +229,14 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $fields = $this->getModelFields($name);
 
         // filter timestamp and json fields
-        $fields = collect($fields)->filter(function ($field){
+        $fields = collect($fields)->filter(function ($field) {
             // check if field is date time or json
             $type = data_get($field, 'type');
+
             return  $type === 'timestamp' || $type === 'json';
-        })->map(function ($field, $fieldName){
+        })->map(function ($field, $fieldName) {
             $cast = data_get($field, 'type') === 'json' ? 'array' : 'timestamp';
+
             return '\'' . $fieldName . '\' => \'' . $cast . '\'';
         });
 
@@ -247,7 +247,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     {
         $fields = $this->getModelFields($name);
 
-        $generateRelationFunction = function ($fieldName) use($name){
+        $generateRelationFunction = function ($fieldName) use ($name) {
 
             // fieldname should be snakecase
             $camelName = Str::camel($fieldName);
@@ -260,18 +260,16 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
                 '{' .
                 '    return $this->belongsTo(\\App\\Models\\'.Str::studly($name).'::class, \''. $fieldName .'\');' .
                 '}';
-
         };
 
-        $fields = collect($fields)->filter(function ($field){
+        $fields = collect($fields)->filter(function ($field) {
             return data_get($field, 'foreign');
-        })->map(function ($field, $fieldName)use($generateRelationFunction){
+        })->map(function ($field, $fieldName) use ($generateRelationFunction) {
             // TODO: what about pivot table?
             // fieldName looks something like author_id
             return $generateRelationFunction($fieldName);
-
         });
+
         return str_replace(['{{ relations }}', '{{relations}}'], $fields->join("\n"), $stub);
     }
-
 }

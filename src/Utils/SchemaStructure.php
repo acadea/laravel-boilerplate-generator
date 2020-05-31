@@ -3,9 +3,6 @@
 
 namespace Acadea\Boilerplate\Utils;
 
-
-
-
 use Acadea\Boilerplate\Exceptions\FileNotFoundException;
 use Illuminate\Support\Facades\App;
 
@@ -18,9 +15,10 @@ class SchemaStructure
 //            ? $customPath
 //            : __DIR__. '/../stubs/schema.stub';
 
-        if(!$configExist){
+        if (! $configExist) {
             throw new FileNotFoundException('Schema structure file not found. Please define the path to schema structure in config.');
         }
+
         return require $customPath;
     }
 }

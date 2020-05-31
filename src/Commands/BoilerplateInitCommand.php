@@ -38,6 +38,5 @@ class BoilerplateInitCommand extends Command
         // create base repository
 
         // create base crud repository
-
     }
 }
