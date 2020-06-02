@@ -2,7 +2,6 @@
 
 namespace Acadea\Boilerplate\Commands;
 
-use Illuminate\Console\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 
 class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryMakeCommand
@@ -54,7 +53,9 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
         ];
 
         return str_replace(
-            array_keys($replace), array_values($replace), parent::buildClass($name)
+            array_keys($replace),
+            array_values($replace),
+            parent::buildClass($name)
         );
     }
 
