@@ -66,10 +66,9 @@ class BoilerplateInitCommand extends GeneratorCommand
 
         ];
 
-        collect($stubs)->each(function ($dest, $source){
+        collect($stubs)->each(function ($dest, $source) {
             $this->publishStub($source, $dest);
         });
-
     }
 
     public function publishStub($source, $dest)
