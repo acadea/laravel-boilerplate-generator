@@ -18,7 +18,9 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return $this->laravel->basePath(trim('/stubs/repository.stub', '/'));
+        return file_exists($customPath = $this->laravel->basePath(trim('/stubs/repository.stub', '/')))
+            ? $customPath
+            : __DIR__. '/..' . '/stubs/repository.stub';
     }
 
     /**
