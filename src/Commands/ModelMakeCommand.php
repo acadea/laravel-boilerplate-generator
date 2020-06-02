@@ -2,6 +2,7 @@
 
 namespace Acadea\Boilerplate\Commands;
 
+
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
@@ -207,6 +208,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
                         : __DIR__. '/..' . $stub;
     }
 
+
     protected function getModelFields($modelName)
     {
         return data_get(SchemaStructure::get(), strtolower(Str::singular($modelName)));
@@ -272,4 +274,5 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
         return str_replace(['{{ relations }}', '{{relations}}'], $fields->join("\n"), $stub);
     }
+
 }
