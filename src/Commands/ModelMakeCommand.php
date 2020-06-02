@@ -2,7 +2,6 @@
 
 namespace Acadea\Boilerplate\Commands;
 
-
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
@@ -274,5 +273,4 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
         return str_replace(['{{ relations }}', '{{relations}}'], $fields->join("\n"), $stub);
     }
-
 }
