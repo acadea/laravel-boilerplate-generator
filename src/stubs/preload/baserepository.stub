@@ -4,17 +4,33 @@
 namespace App\Repositories\Api;
 
 
-use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\QueryBuilder\QueryBuilder;
 
-abstract class BaseCrudRepository extends BaseRepository
+abstract class BaseRepository
 {
     protected $allowedFilters = [];
     protected $allowedSorts = [];
 
+    public function __construct()
+    {
+        $model = app()->make($this->model());
+
+        if (! $model instanceof Model) {
+            throw new \Exception("Class {$this->model()} must be an instance of ".Model::class);
+        }
+
+        $this->model = $model;
+    }
+
     abstract public function model();
 
     abstract public function forceDelete($model);
+
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
 
     abstract public function update($model, array $data);
 
@@ -64,12 +80,9 @@ abstract class BaseCrudRepository extends BaseRepository
      * @param $model
      * @return mixed
      */
-    public function softDelete($model)
+    public function softDelete(Model $model)
     {
-        $result = $this->deleteById($model->id);
-
-        return $result;
+        return $model->delete();
     }
-
 
 }

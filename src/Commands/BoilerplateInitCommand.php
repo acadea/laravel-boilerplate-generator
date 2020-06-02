@@ -22,16 +22,7 @@ class BoilerplateInitCommand extends GeneratorCommand
      * @var string
      */
     protected $description = 'Initialise the required files for the boilerplate to work.';
-    /**
-     * @var Composer
-     */
-    private Composer $composer;
 
-    public function __construct(Composer $composer)
-    {
-        parent::__construct();
-        $this->composer = $composer;
-    }
 
     protected function getStub()
     {
@@ -47,35 +38,53 @@ class BoilerplateInitCommand extends GeneratorCommand
     {
         // TODO: complete this.
 
-        // composer install packages
-        $packages = [
-            'spatie/laravel-query-builder',
-            'laravel/passport',
-            'laravel/scout',
-            'teamtnt/laravel-scout-tntsearch-driver',
-            'spatie/laravel-permission',
-        ];
-
-        dump('Installing composer packages..');
-        collect($packages)->each(function ($package) {
-            $this->composer->run(['require', $package]);
-        });
+//        // composer install packages
+//        $packages = [
+//            'spatie/laravel-query-builder',
+//            'laravel/passport',
+//            'laravel/scout',
+//            'teamtnt/laravel-scout-tntsearch-driver',
+//            'spatie/laravel-permission',
+//        ];
+//
+//        dump('Installing composer packages..');
+//        collect($packages)->each(function ($package) {
+//            $this->laravel->make(Composer::class)->run(['require', $package]);
+//        });
 
         // composer install
 
         // create exception class -- GeneralJsonException
         // load stub and push to exception folder
-        $path =
-        $this->files->put($path, $this->sortImports($this->buildClass($name)));
+        $stubs = [
+            '/stubs/preload/json.exception.stub' => '/app/Exceptions/GeneralJsonException.php',
+            '/stubs/preload/baserepository.stub' => '/app/Repositories/BaseRepository.php',
+            '/stubs/preload/trait.disable-foreign-keys.stub' => '/database/seeds/Traits/DisableForeignKeys.php',
+            '/stubs/preload/trait.truncate-table.stub' => '/database/seeds/Traits/TruncateTable.php',
+//            '/stubs/preload/json.exception.stub' => '/app/Exceptions/GeneralJsonException.php',
+        // traits
 
+        ];
 
-        // create db trait: truncate table and disable/enable foreign key
+        collect($stubs)->each(function ($dest, $source){
+            $this->publishStub($source, $dest);
+        });
 
-        // create base repository
+    }
 
-        // create base crud repository
+    public function publishStub($source, $dest)
+    {
+        $stubPath = file_exists($customPath = $this->laravel->basePath(trim($source, '/')))
+            ? $customPath
+            : __DIR__. '/..' . $source;
 
-        // create base api repository
+        $stubContent = $this->files->get($stubPath);
+
+        $path = $this->laravel->basePath($dest);
+
+        $this->makeDirectory($path);
+
+        $this->files->put($path, $this->sortImports($stubContent));
     }
 
     public function buildJsonException()
