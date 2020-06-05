@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
+
+class TntSearchImportAll extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'tntsearch:import-all';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Index all models';
+
+    protected $searchableModel = [
+        // put all of your searchable models here
+    ];
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        // TODO: try to read all model from the models dir, check if they are using the searchable trait -- eg if they have the search method
+        // pass them in the searchable model property
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
+        collect($this->searchableModel)->each(function ($fqcn){
+            dump('Indexing ' . $fqcn);
+            Artisan::call('tntsearch:import', [
+                'model' => $fqcn
+            ]);
+        });
+    }
+}

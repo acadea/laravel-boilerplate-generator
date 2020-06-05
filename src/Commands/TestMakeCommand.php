@@ -5,11 +5,12 @@ namespace Acadea\Boilerplate\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
 
-class ApiEventMakeCommand extends GeneratorCommand
+class  TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
 {
 
     /**
@@ -19,10 +20,9 @@ class ApiEventMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return file_exists($customPath = $this->laravel->basePath(trim('/stubs/event.api.stub', '/')))
+        return file_exists($customPath = $this->laravel->basePath(trim('/stubs/test.api.stub', '/')))
             ? $customPath
-            : __DIR__. '/..' . '/stubs/event.api.stub';
-
+            : __DIR__.'/stubs/test.api.stub';
     }
 
     /**
@@ -30,27 +30,16 @@ class ApiEventMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'boilerplate:api-event {name} {--model= : The model that this event based on.}';
+    protected $signature = 'boilerplate:test {name} {--model= : The model that this repo based on.}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Create a new Api Event';
+    protected $description = 'Create a new Api Test Class';
 
-    protected $type = 'Event';
-
-    /**
-     * Get the default namespace for the class.
-     *
-     * @param  string  $rootNamespace
-     * @return string
-     */
-    protected function getDefaultNamespace($rootNamespace)
-    {
-        return $rootNamespace.'\Events\Api\\' . Str::ucfirst($this->getModelName()) ;
-    }
+    protected $type = 'Test';
 
     /**
      * Execute the console command.
@@ -60,6 +49,18 @@ class ApiEventMakeCommand extends GeneratorCommand
     public function handle()
     {
         parent::handle();
+
+    }
+
+    /**
+     * Get the default namespace for the class.
+     *
+     * @param  string  $rootNamespace
+     * @return string
+     */
+    protected function getDefaultNamespace($rootNamespace)
+    {
+        return 'Tests\Feature\Api\V1\\';
     }
 
     public function buildClass($name)
@@ -69,9 +70,7 @@ class ApiEventMakeCommand extends GeneratorCommand
         $replace = $this->buildModelReplacements($replace);
 
         return str_replace(
-            array_keys($replace),
-            array_values($replace),
-            parent::buildClass($name)
+            array_keys($replace), array_values($replace), parent::buildClass($name)
         );
     }
 
@@ -87,20 +86,18 @@ class ApiEventMakeCommand extends GeneratorCommand
             $model = $rootNamespace.'Models\\'.$model;
         }
 
-        return Str::ucfirst($model);
+        return $model;
     }
 
     protected function getModelName()
     {
-        if (! $this->option('model')) {
+        if(!$this->option('model')) {
             // get model from name
-            $name = $this->getNameInput();
-            $exploded = explode('_', Str::snake(Str::camel($name)));
-            $sliced = array_slice(array_map([Str::class, 'ucfirst'], $exploded), 0, sizeof($exploded) - 1);
+            $name = $this->getNameInput();;
+            throw_if(substr($name, -7) !== 'ApiTest', InvalidArgumentException::class, "Name should follow the convention: {model}ApiTest");
 
-            return implode('', $sliced);
+            return str_replace('ApiTest', "", $name);
         }
-
         return $this->option('model');
     }
 
@@ -118,6 +115,10 @@ class ApiEventMakeCommand extends GeneratorCommand
             throw new ModelNotFoundException('Model does not exist. Namespace: ' . $modelClass);
         }
 
+        // make sure routename is plurarised correctly
+        $endpointName = Str::kebab(Str::camel(Str::plural(class_basename($modelClass))));
+        $routeEndpoint = substr($endpointName, 0, strlen($endpointName) - 1);
+
         return array_merge($replace, [
             'DummyFullModelClass' => $modelClass,
             '{{ namespacedModel }}' => $modelClass,
@@ -128,6 +129,9 @@ class ApiEventMakeCommand extends GeneratorCommand
             'DummyModelVariable' => lcfirst(class_basename($modelClass)),
             '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
             '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
+            '{{ routeEndpoint }}' => $routeEndpoint,
+            '{{routeEndpoint}}' => $routeEndpoint,
+
         ]);
     }
 
@@ -142,4 +146,26 @@ class ApiEventMakeCommand extends GeneratorCommand
             ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this repository is based on.'],
         ];
     }
+
+    /**
+     * Get the destination class path.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getPath($name)
+    {
+        $name = Str::replaceFirst($this->rootNamespace(), '', $name);
+
+        $modelName = $this->getModelName();
+
+        $path = str_replace('\\', '/', $name);
+
+        $splitted = explode('/', $path);
+
+        array_splice($splitted, -2, 0, $modelName);
+
+        return base_path('tests').implode('/', $splitted). '.php';
+    }
+
 }
