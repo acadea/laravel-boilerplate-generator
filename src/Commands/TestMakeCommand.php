@@ -3,14 +3,12 @@
 namespace Acadea\Boilerplate\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
 
-class  TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
+class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
 {
 
     /**
@@ -49,7 +47,6 @@ class  TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
     public function handle()
     {
         parent::handle();
-
     }
 
     /**
@@ -70,7 +67,9 @@ class  TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
         $replace = $this->buildModelReplacements($replace);
 
         return str_replace(
-            array_keys($replace), array_values($replace), parent::buildClass($name)
+            array_keys($replace),
+            array_values($replace),
+            parent::buildClass($name)
         );
     }
 
@@ -91,13 +90,15 @@ class  TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
 
     protected function getModelName()
     {
-        if(!$this->option('model')) {
+        if (! $this->option('model')) {
             // get model from name
-            $name = $this->getNameInput();;
+            $name = $this->getNameInput();
+            ;
             throw_if(substr($name, -7) !== 'ApiTest', InvalidArgumentException::class, "Name should follow the convention: {model}ApiTest");
 
             return str_replace('ApiTest', "", $name);
         }
+
         return $this->option('model');
     }
 
@@ -167,5 +168,4 @@ class  TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
 
         return base_path('tests').implode('/', $splitted). '.php';
     }
-
 }

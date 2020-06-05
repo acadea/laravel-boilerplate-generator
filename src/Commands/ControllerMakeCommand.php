@@ -3,13 +3,11 @@
 namespace Acadea\Boilerplate\Commands;
 
 use Faker\Generator;
-use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use League\Flysystem\FileNotFoundException;
-use Symfony\Component\Console\Input\InputOption;
 
 class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCommand
 {
@@ -46,6 +44,7 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         if ($this->option('api')) {
             return $rootNamespace . '\Http\Controllers\Api\V1';
         }
+
         return $rootNamespace . '\Http\Controllers';
     }
 
@@ -71,25 +70,24 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
      */
     protected function buildClass($name)
     {
-
         $modelClass = $this->parseModel(ucfirst($this->getModelName()));
 
         $replace = [
 
             '{{ indexDocs }}' => $this->generateIndexDocs(),
-            '{{indexDocs}}'   => $this->generateIndexDocs(),
+            '{{indexDocs}}' => $this->generateIndexDocs(),
 
             '{{ storeDocs }}' => $this->generateStoreDocs(),
-            '{{storeDocs}}'   => $this->generateStoreDocs(),
+            '{{storeDocs}}' => $this->generateStoreDocs(),
 
             '{{ showDocs }}' => $this->generateShowDocs(),
-            '{{showDocs}}'   => $this->generateShowDocs(),
+            '{{showDocs}}' => $this->generateShowDocs(),
 
             '{{ updateDocs }}' => $this->generateUpdateDocs(),
-            '{{updateDocs}}'   => $this->generateUpdateDocs(),
+            '{{updateDocs}}' => $this->generateUpdateDocs(),
 
             '{{ deleteDocs }}' => $this->generateDeleteDocs(),
-            '{{deleteDocs}}'   => $this->generateDeleteDocs(),
+            '{{deleteDocs}}' => $this->generateDeleteDocs(),
 
         ];
 
@@ -107,7 +105,9 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
 
 
         return str_replace(
-            array_keys($replace), array_values($replace), parent::buildClass($name)
+            array_keys($replace),
+            array_values($replace),
+            parent::buildClass($name)
         );
     }
 
@@ -129,7 +129,7 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
     {
         // To read the file where the schema structure is defined.
         $structurePath = $this->laravel->basePath() . config('boilerplate.paths.schema-structure');
-        if (!file_exists($structurePath)) {
+        if (! file_exists($structurePath)) {
             throw new FileNotFoundException('Schema structure file not found. Please define the path to schema structure in config.');
         }
 
@@ -142,7 +142,7 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         return $fields;
     }
 
-    private function generateBodyParams($field, $value, $required=true)
+    private function generateBodyParams($field, $value, $required = true)
     {
         // if attributes contain 'nullable'
         $nullable = collect(data_get($value, 'attribute'))->contains('nullable');
@@ -173,7 +173,6 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         return collect($fields)->map(function ($value, $field) {
             return $this->generateBodyParams($field, $value, true);
         })->join("\n*");
-
     }
 
     protected function generateExample($dataType)
@@ -225,8 +224,8 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         if ($dataType === 'year') {
             return $faker->year;
         }
-        return '';
 
+        return '';
     }
 
     public function generateUpdateDocs()
@@ -238,7 +237,6 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         return collect($fields)->map(function ($value, $field) {
             return $this->generateBodyParams($field, $value, false);
         })->join("\n*");
-
     }
 
     public function generateShowDocs()
