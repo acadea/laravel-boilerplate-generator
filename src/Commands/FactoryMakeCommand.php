@@ -6,9 +6,6 @@ use Acadea\Boilerplate\Commands\traits\ParseModel;
 use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
 use Acadea\Boilerplate\Utils\DataType;
 use Acadea\Boilerplate\Utils\SchemaStructure;
-use Faker\Generator;
-use Illuminate\Support\Arr;
-use League\Flysystem\FileNotFoundException;
 use Symfony\Component\Console\Input\InputOption;
 
 class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryMakeCommand
@@ -56,18 +53,17 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
      */
     protected function buildClass($name)
     {
-
         $model = ucfirst($this->getModelName());
 
         $factoryFields = $this->generateFactoryFields();
 
         // dd($model);
         $replace = [
-            'DummyModel'            => $model,
-            '{{ model }}'           => $model,
-            '{{model}}'             => $model,
-            '{{ body }}'            => $factoryFields,
-            '{{body}}'              => $factoryFields,
+            'DummyModel' => $model,
+            '{{ model }}' => $model,
+            '{{model}}' => $model,
+            '{{ body }}' => $factoryFields,
+            '{{body}}' => $factoryFields,
         ];
 
         $stub = $this->files->get($this->getStub());
@@ -94,11 +90,8 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
 
         // generate faker
         return collect($fields)->map(function ($field, $name) {
-
             return "'{$name}' => " . $this->generateFakerField(data_get($field, 'type')) . ',';
-
         })->join("\n");
-
     }
 
     protected function generateFakerField($dataType)

@@ -3,7 +3,6 @@
 
 namespace Acadea\Boilerplate\Commands\traits;
 
-
 use Illuminate\Support\Str;
 
 trait ParseModel

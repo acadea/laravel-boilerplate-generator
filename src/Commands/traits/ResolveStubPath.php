@@ -3,7 +3,6 @@
 
 namespace Acadea\Boilerplate\Commands\traits;
 
-
 trait ResolveStubPath
 {
     protected function resolveStubPath($stub)
