@@ -4,11 +4,11 @@ namespace Acadea\Boilerplate\Commands;
 
 use Acadea\Boilerplate\Commands\traits\ParseModel;
 use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
+use Acadea\Boilerplate\Utils\DataType;
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCommand
 {
@@ -165,52 +165,37 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
     {
         $faker = $this->laravel->make(Generator::class);
 
-        $integers = ['foreignId', 'bigInteger', 'integer', 'mediumInteger', 'smallInteger', 'tinyInteger', 'unsignedBigInteger', 'unsignedInteger', 'unsignedMediumInteger', 'unsignedSmallInteger', 'unsignedTinyInteger'];
-        $booleans = ['binary', 'boolean'];
-        $strings = ['char', 'string'];
-        $dates = ['date', 'dateTime', 'dateTimeTz'];
-        $timestamps = [ 'nullableTimestamps', 'time', 'timeTz', 'timestamp', 'timestampTz'];
-        $floats = ['decimal', 'double', 'float', 'unsignedDecimal'];
-        $paragraphs = ['longText', 'mediumText', 'text'];
+        $dataType = DataType::standardise($dataType);
 
-        if (collect($integers)->contains($dataType)) {
-            return 1;
-        }
-        if (collect($booleans)->contains($dataType)) {
-            return Arr::random([true, false]);
-        }
-        if (collect($strings)->contains($dataType)) {
-            return $faker->text;
-        }
-        if (collect($dates)->contains($dataType)) {
-            return $faker->date();
-        }
-        if (collect($floats)->contains($dataType)) {
-            return $faker->randomNumber(3);
-        }
-        if (collect($paragraphs)->contains($dataType)) {
-            return $faker->paragraph(3);
-        }
-        if (collect($timestamps)->contains($dataType)) {
-            return $faker->unixTime();
-        }
-        if ($dataType === 'ipAddress') {
-            return $faker->ipv4;
-        }
-        if ($dataType === 'json') {
-            return json_encode($faker->randomElements());
-        }
-        if ($dataType === 'macAddress') {
-            return $faker->macAddress;
-        }
-        if ($dataType === 'uuid') {
-            return Str::uuid()->toString();
-        }
-        if ($dataType === 'year') {
-            return $faker->year;
+        switch ($dataType){
+            case 'integer' || 'foreignId':
+                return 1;
+            case 'boolean':
+                return Arr::random([true, false]);
+            case 'string':
+                return $faker->text;
+            case 'date':
+                return $faker->date();
+            case 'float':
+                return $faker->randomNumber(3);
+            case 'text':
+                return $faker->paragraph(3);
+            case 'timestamp':
+                return $faker->unixTime();
+            case 'ipAddress':
+                return $faker->ipv4;
+            case 'json':
+                return $faker->words(3);
+            case 'macAddress':
+                return $faker->macAddress;
+            case 'uuid':
+                return $faker->uuid;
+            case 'year':
+                return $faker->year;
+            default:
+                return '';
         }
 
-        return '';
     }
 
     public function generateUpdateDocs()

@@ -57,7 +57,6 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
 
         $factoryFields = $this->generateFactoryFields();
 
-        // dd($model);
         $replace = [
             'DummyModel' => $model,
             '{{ model }}' => $model,

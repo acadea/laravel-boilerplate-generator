@@ -2,6 +2,7 @@
 
 namespace Acadea\Boilerplate\Commands;
 
+use Acadea\Boilerplate\Commands\traits\ParseModel;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
@@ -10,6 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 
 class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
 {
+    use ParseModel;
 
     /**
      * Get the stub file for the generator.
@@ -73,20 +75,6 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
         );
     }
 
-    protected function parseModel($model)
-    {
-        if (preg_match('([^A-Za-z0-9_/\\\\])', $model)) {
-            throw new InvalidArgumentException('Model name contains invalid characters.');
-        }
-
-        $model = trim(str_replace('/', '\\', $model), '\\');
-
-        if (! Str::startsWith($model, $rootNamespace = $this->laravel->getNamespace())) {
-            $model = $rootNamespace.'Models\\'.$model;
-        }
-
-        return $model;
-    }
 
     protected function getModelName()
     {

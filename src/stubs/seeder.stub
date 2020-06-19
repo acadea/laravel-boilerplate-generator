@@ -1,0 +1,25 @@
+<?php
+
+use {{ rootNamespace }}Models\{{ model }};
+use Illuminate\Database\Seeder;
+
+class {{ class }} extends Seeder
+{
+    use DisableForeignKeys, TruncateTable;
+
+
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $this->disableForeignKeys();
+        $this->truncate('{{ tableName }}');
+
+        factory({{ model }}::class, 2)->create();
+
+        $this->enableForeignKeys();
+    }
+}

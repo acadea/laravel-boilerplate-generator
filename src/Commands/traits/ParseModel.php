@@ -21,4 +21,13 @@ trait ParseModel
 
         return $model;
     }
+
+    protected function getModelName()
+    {
+        $name = $this->argument('name');
+
+        $model = substr($name, 0, strlen($name) - strlen($this->type));
+
+        return class_basename($this->parseModel($model));
+    }
 }
