@@ -167,7 +167,7 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
 
         $dataType = DataType::standardise($dataType);
 
-        switch ($dataType){
+        switch ($dataType) {
             case 'integer' || 'foreignId':
                 return 1;
             case 'boolean':
@@ -195,7 +195,6 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
             default:
                 return '';
         }
-
     }
 
     public function generateUpdateDocs()

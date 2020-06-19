@@ -4,9 +4,6 @@ namespace Acadea\Boilerplate\Commands;
 
 use Acadea\Boilerplate\Commands\traits\ParseModel;
 use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
-use Illuminate\Console\GeneratorCommand;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Composer;
 use Illuminate\Support\Str;
 
 class SeederMakeCommand extends \Illuminate\Database\Console\Seeds\SeederMakeCommand
@@ -57,9 +54,5 @@ class SeederMakeCommand extends \Illuminate\Database\Console\Seeds\SeederMakeCom
             array_values($replace),
             $stub
         );
-
-
     }
-
-
 }
