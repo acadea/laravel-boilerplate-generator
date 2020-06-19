@@ -3,7 +3,8 @@
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
 use Faker\Generator as Faker;
-use {{ namespacedModel }};
+use {{ rootNamespace }}Models\{{ model }};
+
 
 $factory->define({{ model }}::class, function (Faker $faker) {
     return [

@@ -2,15 +2,18 @@
 
 namespace Acadea\Boilerplate\Commands;
 
+use Acadea\Boilerplate\Commands\traits\ParseModel;
+use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
+use Acadea\Boilerplate\Utils\SchemaStructure;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use League\Flysystem\FileNotFoundException;
 
 class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCommand
 {
+    use ParseModel, ResolveStubPath;
     /**
      * The console command name.
      *
@@ -48,17 +51,6 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         return $rootNamespace . '\Http\Controllers';
     }
 
-    protected function resolveStubPath($stub)
-    {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-            ? $customPath
-            : __DIR__. '/../'.$stub;
-    }
-
-//    protected function getStub()
-//    {
-//        return $this->resolveStubPath('/stubs/controller.api.with-docs.stub');
-//    }
 
     /**
      * Build the class with the given name.
@@ -120,22 +112,17 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
     {
         $controller = $this->argument('name');
 
-        $model = substr($controller, 0, strlen($controller) - 10);
+        $model = substr($controller, 0, strlen($controller) - strlen($this->type));
 
         return lcfirst(class_basename($this->parseModel($model)));
     }
 
     protected function getDbStructure()
     {
-        // To read the file where the schema structure is defined.
-        $structurePath = $this->laravel->basePath() . config('boilerplate.paths.schema-structure');
-        if (! file_exists($structurePath)) {
-            throw new FileNotFoundException('Schema structure file not found. Please define the path to schema structure in config.');
-        }
-
         $model = $this->getModelName();
 
-        $fields = data_get(require $structurePath, $model);
+        // To read the file where the schema structure is defined.
+        $fields = data_get(SchemaStructure::get(), $model);
 
         throw_if($fields === null, ModelNotFoundException::class, 'Undefined model ' . $model);
 
@@ -185,7 +172,6 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         $dates = ['date', 'dateTime', 'dateTimeTz'];
         $timestamps = [ 'nullableTimestamps', 'time', 'timeTz', 'timestamp', 'timestampTz'];
         $floats = ['decimal', 'double', 'float', 'unsignedDecimal'];
-
         $paragraphs = ['longText', 'mediumText', 'text'];
 
         if (collect($integers)->contains($dataType)) {
@@ -249,18 +235,5 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         return '';
     }
 
-    protected function parseModel($model)
-    {
-        if (preg_match('([^A-Za-z0-9_/\\\\])', $model)) {
-            throw new InvalidArgumentException('Model name contains invalid characters.');
-        }
 
-        $model = trim(str_replace('/', '\\', $model), '\\');
-
-        if (! Str::startsWith($model, $rootNamespace = $this->laravel->getNamespace())) {
-            $model = $rootNamespace.'Models\\'.$model;
-        }
-
-        return $model;
-    }
 }
