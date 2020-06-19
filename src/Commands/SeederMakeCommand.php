@@ -2,12 +2,14 @@
 
 namespace Acadea\Boilerplate\Commands;
 
-use Illuminate\Console\GeneratorCommand;
-use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Composer;
+use Acadea\Boilerplate\Commands\traits\ParseModel;
+use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
+use Illuminate\Support\Str;
 
-class SeederMakeCommand extends GeneratorCommand
+class SeederMakeCommand extends \Illuminate\Database\Console\Seeds\SeederMakeCommand
 {
+    use ResolveStubPath, ParseModel;
+
     /**
      * The console command name.
      *
@@ -29,81 +31,28 @@ class SeederMakeCommand extends GeneratorCommand
      */
     protected $type = 'Seeder';
 
-    /**
-     * The Composer instance.
-     *
-     * @var \Illuminate\Support\Composer
-     */
-    protected $composer;
-
-    /**
-     * Create a new command instance.
-     *
-     * @param  \Illuminate\Filesystem\Filesystem  $files
-     * @param  \Illuminate\Support\Composer  $composer
-     * @return void
-     */
-    public function __construct(Filesystem $files, Composer $composer)
+    protected function buildClass($name)
     {
-        parent::__construct($files);
+        $stub = $this->files->get($this->getStub());
 
-        $this->composer = $composer;
-    }
+        $stub = $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
 
-    /**
-     * Execute the console command.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        parent::handle();
+        $model = $this->getModelName();
 
-        $this->composer->dumpAutoloads();
-    }
+        $tableName = Str::snake(Str::plural(Str::camel($model)));
 
-    /**
-     * Get the stub file for the generator.
-     *
-     * @return string
-     */
-    protected function getStub()
-    {
-        return $this->resolveStubPath('/stubs/seeder.stub');
-    }
+        $replace = [
+            'DummyModel' => $model,
+            '{{ model }}' => $model,
+            '{{model}}' => $model,
+            '{{tableName}}' => $tableName,
+            '{{ tableName }}' => $tableName,
+        ];
 
-    /**
-     * Resolve the fully-qualified path to the stub.
-     *
-     * @param  string  $stub
-     * @return string
-     */
-    protected function resolveStubPath($stub)
-    {
-        return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-            ? $customPath
-            : __DIR__.$stub;
-    }
-
-    /**
-     * Get the destination class path.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    protected function getPath($name)
-    {
-        return $this->laravel->databasePath().'/seeds/'.$name.'.php';
-    }
-
-    /**
-     * Parse the class name and format according to the root namespace.
-     *
-     * @param  string  $name
-     * @return string
-     */
-    protected function qualifyClass($name)
-    {
-        return $name;
+        return str_replace(
+            array_keys($replace),
+            array_values($replace),
+            $stub
+        );
     }
 }

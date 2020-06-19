@@ -1,0 +1,194 @@
+<?php
+
+namespace Tests\Feature\Api\V1\{{ model }};
+
+use App\Events\Api\{{ model }}\{{ model }}Created;
+use App\Events\Api\{{ model }}\{{ model }}PermanentlyDeleted;
+use App\Events\Api\{{ model }}\{{ model }}Updated;
+use App\Models\{{ model }};
+use App\Repositories\Api\V1\{{ model }}Repository;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
+use Spatie\QueryBuilder\AllowedFilter;
+use Tests\ApiTestCase;
+
+class {{ model }}ApiTest extends ApiTestCase
+{
+
+    protected $admin;
+
+    protected $uri = '/api/v1/{{ routeEndpoint }}s';
+
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->admin = $this->loginAsAdmin();
+    }
+
+
+    public function test_index()
+    {
+        ${{ modelVariable }}s = factory({{ model }}::class,10)->create();
+
+        $dummy = ${{ modelVariable }}s->first();
+
+        $response = $this->json('get', $this->uri);
+
+        $response->assertStatus(200);
+
+
+        /* test sort */
+        $repo = new {{ model }}Repository;
+        $sortableFields = $repo->allowedSorts;
+
+        if(!empty($sortableFields)){
+            collect($sortableFields)->each(function ($sortable){
+                // testing desc sort
+                $response = $this->json('get', $this->uri, [
+                    'sort' => '-' . $sortable
+                ]);
+
+                $results = $response->assertStatus(200)->json('data');
+
+                // make sure array is actually sorted
+                collect($results)->reduce(function ($carry, $current){
+                    $this->assertTrue($carry < $current);
+                    return $current;
+                });
+            });
+
+        }
+
+
+        /* test filter*/
+
+        $filterables = $repo->allowedFilters;
+
+        if(!empty($filterables)){
+            collect($filterables)->each(function ($filterable) use($dummy){
+                if($filterable instanceof AllowedFilter){
+                    $filterable = $filterable->getName();
+                }
+
+                $dummyValue = ($dummyValue = data_get($dummy, $filterable)) instanceof Carbon ? (string)$dummyValue : $dummyValue;
+
+                $query = http_build_query([
+                    "filter[{$filterable}]" => $dummyValue,
+                ]);
+
+
+                $response = $this->json('get', $this->uri  .'?' . $query);
+
+                $results = $response->assertStatus(200)->json('data');
+
+                collect($results)->each(function ($result)use($filterable, $dummyValue){
+                    $this->assertTrue(data_get($result, $filterable) === $dummyValue );
+                });
+
+
+            });
+
+
+        }
+
+        // test search
+        if((new \ReflectionClass({{ model }}::class))->hasMethod('search') ){
+
+            $searchableFields = collect($dummy->toSearchableArray())->except(['id'])->keys();
+
+            $toSearch = $searchableFields->random();
+
+            $uuid = Str::uuid()->toString();
+
+            $dummy = factory({{ model }}::class, 5)->create([
+                $toSearch => $uuid
+            ]);
+
+            $response = $this->json('get', $this->uri . '?' . http_build_query(['search' => $uuid]) );
+
+            $results = $response->assertStatus(200)->json('data');
+
+            $this->assertCount(5, $results);
+        }
+
+    }
+
+    public function test_show()
+    {
+        $dummy = factory({{ model }}::class)->create();
+        $response = $this->json('get', $this->uri . '/' . $dummy->id);
+
+        $result = $response->assertStatus(200)->json('data');
+
+        $this->assertEquals(data_get($result, 'id'), $dummy->id);
+
+    }
+
+    public function test_create()
+    {
+        Event::fake();
+//        $fillables = collect((new {{ model }})->getFillable());
+
+//        $toFill = $fillables->random();
+//
+        $dummy = factory({{ model }}::class)->make();
+
+
+        $response = $this->json('post', $this->uri, $dummy->toArray());
+
+//        $response->dump();
+        $result = $response->assertStatus(201)->json('data');
+
+        Event::assertDispatched({{ model }}Created::class);
+
+//        $this->assertTrue(data_get($result, $toFill) === data_get($dummy, $toFill));
+    }
+
+
+    public function test_update()
+    {
+        Event::fake();
+
+        $dummy = factory({{ model }}::class)->create();
+        $dummy2 = factory({{ model }}::class)->make();
+
+        $fillables = collect((new {{ model }})->getFillable());
+        $toUpdate = $fillables->random();
+
+        $response = $this->json('patch', $this->uri . '/' . $dummy->id, [
+            $toUpdate => data_get($dummy2, $toUpdate)
+        ]);
+
+        $result = $response->assertStatus(200)->json('data');
+
+        Event::assertDispatched({{ model }}Updated::class);
+
+        $this->assertEquals(data_get($dummy2, $toUpdate), data_get($dummy->refresh(), $toUpdate));
+
+    }
+
+
+    public function test_delete()
+    {
+        Event::fake();
+
+        $dummy = factory({{ model }}::class)->create();
+        $response = $this->json('delete', $this->uri . '/' . $dummy->id);
+
+        $result = $response->json('data');
+
+        $this->expectException(ModelNotFoundException::class);
+
+        {{ model }}::query()->findOrFail($dummy->id);
+
+        Event::assertDispatched({{ model }}PermanentlyDeleted::class);
+
+
+    }
+
+}
