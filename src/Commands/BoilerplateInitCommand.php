@@ -62,7 +62,6 @@ class BoilerplateInitCommand extends GeneratorCommand
             '/stubs/preload/trait.disable-foreign-keys.stub' => '/database/seeds/Traits/DisableForeignKeys.php',
             '/stubs/preload/trait.truncate-table.stub' => '/database/seeds/Traits/TruncateTable.php',
             '/stubs/preload/factory.helpers.stub' => '/database/factories/helpers/FactoryHelper.php',
-//            '/stubs/preload/json.exception.stub' => '/app/Exceptions/GeneralJsonException.php',
             '/stubs/preload/test.api-test-case' => '/tests/ApiTestCase.php',
         // traits
 
@@ -88,8 +87,4 @@ class BoilerplateInitCommand extends GeneratorCommand
         $this->files->put($path, $this->sortImports($stubContent));
     }
 
-    public function buildJsonException()
-    {
-        $path = '';
-    }
 }

@@ -18,6 +18,7 @@ class ApiRouteMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
+        
         $stub = '/stubs/route.stub';
 
         return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))

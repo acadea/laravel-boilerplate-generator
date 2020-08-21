@@ -7,11 +7,11 @@ use {{ rootNamespace }}Events\Api\{{ model }}\{{ model }}PermanentlyDeleted;
 use {{ rootNamespace }}Events\Api\{{ model }}\{{ model }}Updated;
 use {{ rootNamespace }}Exceptions\GeneralJsonException;
 use {{ rootNamespace }}Models\{{ model }};
-use {{ rootNamespace }}Repositories\Api\BaseCrudRepository;
+use {{ rootNamespace }}Repositories\Api\BaseRepository;
 use Illuminate\Support\Facades\DB;
 
 
-class {{ model }}Repository extends BaseCrudRepository
+class {{ model }}Repository extends BaseRepository
 {
     protected $allowedFilters;
 

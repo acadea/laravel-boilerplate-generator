@@ -37,6 +37,12 @@ return [
 
 ## Usage
 
+First, define a `schema.php` file in the `database` folder. You can overwrite the default file path in the `boilerplate.php` config file. 
+
+### Structure of `schema.php`
+```
+```
+
 ``` php
 $skeleton = new Acadea\Boilerplate();
 echo $skeleton->echoPhrase('Hello, Acadea!');
