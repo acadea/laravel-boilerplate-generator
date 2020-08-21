@@ -1,5 +1,5 @@
 {
-    "name": "acadea/laravel-boilerplate-generator",
+    "name": "acadea/boilerplate",
     "description": "An opinionated boilerplate generator. Generate boilerplates like repositories, routes, events, api docs and much more!",
     "keywords": [
         "acadea",
@@ -10,7 +10,7 @@
     "authors": [
         {
             "name": "Sam Ngu",
-            "email": "sam.ngu@yandex.com",
+            "email": "opensource@acadea.io",
             "homepage": "https://acadea.io",
             "role": "Developer"
         }
