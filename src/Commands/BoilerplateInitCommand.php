@@ -86,5 +86,4 @@ class BoilerplateInitCommand extends GeneratorCommand
 
         $this->files->put($path, $this->sortImports($stubContent));
     }
-
 }
