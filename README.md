@@ -1,3 +1,4 @@
+
 # Laravel Boilerplate Generator
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/acadea/laravel-boilerplate-generator.svg?style=flat-square)](https://packagist.org/packages/acadea/laravel-boilerplate-generator)
@@ -7,13 +8,15 @@
 
 An opinionated boilerplate generator. Generate boilerplates like repositories, routes, events, api docs and much more!
 
+## NOTE
+This project is still under development and unusable. 
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require acadea/package-skeleton-laravel
+composer require acadea/boilerplate
 ```
 
 You can publish and run the migrations with:
