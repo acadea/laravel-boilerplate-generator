@@ -57,14 +57,21 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
 
         $strings = collect($fields)->map(function ($props, $fieldName) {
             $fieldName = Str::snake(Str::camel($fieldName));
-            $payload = '$table->'.data_get($props, 'type') . '(\'' . $fieldName . '\')';
+            $payload = '$table->'.data_get($props, 'type') . '(' . var_export($fieldName, true) . ')';
 
             $attributes = data_get($props, 'attributes');
 
 
             if (is_array($attributes)) {
-                foreach ($attributes as $attribute) {
-                    $payload .= '->'.$attribute.'()';
+                foreach ($attributes as $key => $value) {
+                    $arguments = '';
+                    if(!is_integer($key) && is_array($value)){
+                        // has arguments passed to value
+                        $value = array_map(fn($val) => var_export($val, true), $value);
+                        $arguments = implode(', ', $value);
+                    }
+
+                    $payload .= '->'.$value.'(' . $arguments .')';
                 }
             }
 

@@ -39,22 +39,24 @@ class BoilerplateInitCommand extends GeneratorCommand
         // TODO: complete this.
 
 //        // composer install packages
-//        $packages = [
-//            'spatie/laravel-query-builder',
-//            'laravel/passport',
-//            'laravel/scout',
-//            'teamtnt/laravel-scout-tntsearch-driver',
-//            'spatie/laravel-permission',
-//        ];
+        $packages = [
+            'spatie/laravel-query-builder',
+            'laravel/passport',
+            'laravel/scout',
+            'teamtnt/laravel-scout-tntsearch-driver',
+            'spatie/laravel-permission',
+        ];
 //
 //        dump('Installing composer packages..');
+//        $this->laravel->make(Composer::class)->run(['require', collect($packages)->join(' ')]);
+
 //        collect($packages)->each(function ($package) {
 //            $this->laravel->make(Composer::class)->run(['require', $package]);
 //        });
 
         // composer install
 
-        // create exception class -- GeneralJsonException
+        // TODO: create a dummy structure.php file as well
         // load stub and push to exception folder
         $stubs = [
             '/stubs/preload/json.exception.stub' => '/app/Exceptions/GeneralJsonException.php',
@@ -62,7 +64,7 @@ class BoilerplateInitCommand extends GeneratorCommand
             '/stubs/preload/trait.disable-foreign-keys.stub' => '/database/seeds/Traits/DisableForeignKeys.php',
             '/stubs/preload/trait.truncate-table.stub' => '/database/seeds/Traits/TruncateTable.php',
             '/stubs/preload/factory.helpers.stub' => '/database/factories/helpers/FactoryHelper.php',
-            '/stubs/preload/test.api-test-case' => '/tests/ApiTestCase.php',
+            '/stubs/preload/test.api-test-case.stub' => '/tests/ApiTestCase.php',
         // traits
 
         ];
