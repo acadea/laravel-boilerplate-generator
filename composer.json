@@ -1,5 +1,5 @@
 {
-    "name": "acadea/boilerplate",
+    "name": "acadea/boilerplate-generator",
     "description": "An opinionated Laravel boilerplate generator. Generate boilerplates like repositories, routes, events, api docs and much more!",
     "keywords": [
         "acadea",
