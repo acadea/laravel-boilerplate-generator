@@ -61,8 +61,8 @@ class BoilerplateInitCommand extends GeneratorCommand
         $stubs = [
             '/stubs/preload/json.exception.stub' => '/app/Exceptions/GeneralJsonException.php',
             '/stubs/preload/baserepository.stub' => '/app/Repositories/BaseRepository.php',
-            '/stubs/preload/trait.disable-foreign-keys.stub' => '/database/seeds/Traits/DisableForeignKeys.php',
-            '/stubs/preload/trait.truncate-table.stub' => '/database/seeds/Traits/TruncateTable.php',
+            '/stubs/preload/trait.disable-foreign-keys.stub' => '/database/seeders/Traits/DisableForeignKeys.php',
+            '/stubs/preload/trait.truncate-table.stub' => '/database/seeders/Traits/TruncateTable.php',
             '/stubs/preload/factory.helpers.stub' => '/database/factories/helpers/FactoryHelper.php',
             '/stubs/preload/test.api-test-case.stub' => '/tests/ApiTestCase.php',
         // traits

@@ -5,6 +5,7 @@ namespace Acadea\Boilerplate\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
@@ -37,7 +38,7 @@ class ApiRouteMakeCommand extends GeneratorCommand
 
         $kebab = Str::kebab(Str::camel($name));
 
-        return $this->laravel['path'].'/routes/api/v1/'.str_replace('\\', '/', $kebab).'.php';
+        return App::basePath().'/routes/api/v1/'.str_replace('\\', '/', $kebab).'.php';
     }
 
     /**

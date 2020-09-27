@@ -2,6 +2,7 @@
 
 namespace Acadea\Boilerplate\Commands;
 
+use Acadea\Fixer\Facade\Fixer;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -46,7 +47,7 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     public function handle()
     {
-        parent::handle();
+        return parent::handle();
     }
 
     /**
@@ -66,11 +67,11 @@ class RepositoryMakeCommand extends GeneratorCommand
 
         $replace = $this->buildModelReplacements($replace);
 
-        return str_replace(
+        return Fixer::format(str_replace(
             array_keys($replace),
             array_values($replace),
             parent::buildClass($name)
-        );
+        ));
     }
 
     protected function parseModel($model)

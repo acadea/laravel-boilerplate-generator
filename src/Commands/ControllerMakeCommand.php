@@ -6,6 +6,7 @@ use Acadea\Boilerplate\Commands\traits\ParseModel;
 use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
 use Acadea\Boilerplate\Utils\DataType;
 use Acadea\Boilerplate\Utils\SchemaStructure;
+use Acadea\Fixer\Facade\Fixer;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
@@ -95,11 +96,11 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         ]);
 
 
-        return str_replace(
+        return Fixer::format(str_replace(
             array_keys($replace),
             array_values($replace),
             parent::buildClass($name)
-        );
+        ));
     }
 
     public function generateIndexDocs()
