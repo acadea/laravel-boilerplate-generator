@@ -33,7 +33,7 @@ class {{ model }}ApiTest extends ApiTestCase
 
     public function test_index()
     {
-        ${{ modelVariable }}s = factory({{ model }}::class,10)->create();
+        ${{ modelVariable }}s = {{ model }}::factory(10)->create();
 
         $dummy = ${{ modelVariable }}s->first();
 
@@ -105,7 +105,7 @@ class {{ model }}ApiTest extends ApiTestCase
 
             $uuid = Str::uuid()->toString();
 
-            $dummy = factory({{ model }}::class, 5)->create([
+            $dummy = {{ model }}::factory(5)->create([
                 $toSearch => $uuid
             ]);
 
@@ -120,7 +120,7 @@ class {{ model }}ApiTest extends ApiTestCase
 
     public function test_show()
     {
-        $dummy = factory({{ model }}::class)->create();
+        $dummy = {{ model }}::factory()->create();
         $response = $this->json('get', $this->uri . '/' . $dummy->id);
 
         $result = $response->assertStatus(200)->json('data');
@@ -136,7 +136,7 @@ class {{ model }}ApiTest extends ApiTestCase
 
 //        $toFill = $fillables->random();
 //
-        $dummy = factory({{ model }}::class)->make();
+        $dummy = {{ model }}::factory()->make();
 
 
         $response = $this->json('post', $this->uri, $dummy->toArray());
@@ -154,8 +154,8 @@ class {{ model }}ApiTest extends ApiTestCase
     {
         Event::fake();
 
-        $dummy = factory({{ model }}::class)->create();
-        $dummy2 = factory({{ model }}::class)->make();
+        $dummy = {{ model }}::factory()->create();
+        $dummy2 = {{ model }}::factory()->make();
 
         $fillables = collect((new {{ model }})->getFillable());
         $toUpdate = $fillables->random();
@@ -177,7 +177,7 @@ class {{ model }}ApiTest extends ApiTestCase
     {
         Event::fake();
 
-        $dummy = factory({{ model }}::class)->create();
+        $dummy = {{ model }}::factory()->create();
         $response = $this->json('delete', $this->uri . '/' . $dummy->id);
 
         $result = $response->json('data');

@@ -3,6 +3,8 @@
 
 namespace Acadea\Boilerplate\Utils;
 
+use Acadea\Fixer\Facade\Fixer;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use League\Flysystem\FileNotFoundException;
 
@@ -39,32 +41,41 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
             $stub = str_replace(['{{fields}}', '{{ fields }}'], $this->generateFieldsString($table), $stub);
         }
 
+        $stub = Fixer::format($stub);
+
         return $stub;
     }
 
 
     protected function generateFieldsString($table)
     {
+        $schemaPath = App::basePath() . config('boilerplate.paths.schema-structure');
         // To read the file where the schema structure is defined.
-        if (! file_exists(config('boilerplate.paths.schema-structure'))) {
+        if (! file_exists($schemaPath)) {
             throw new FileNotFoundException('Schema structure file not found. Please define the path to schema structure in config.');
         }
-        $structure = require config('boilerplate.paths.schema-structure');
-
+        $structure = require $schemaPath;
 
 
         $fields = data_get($structure, strtolower(Str::singular($table)));
 
         $strings = collect($fields)->map(function ($props, $fieldName) {
             $fieldName = Str::snake(Str::camel($fieldName));
-            $payload = '$table->'.data_get($props, 'type') . '(\'' . $fieldName . '\')';
+            $payload = '$table->'.data_get($props, 'type') . '(' . var_export($fieldName, true) . ')';
 
             $attributes = data_get($props, 'attributes');
 
 
             if (is_array($attributes)) {
-                foreach ($attributes as $attribute) {
-                    $payload .= '->'.$attribute.'()';
+                foreach ($attributes as $key => $value) {
+                    $arguments = '';
+                    if (! is_integer($key) && is_array($value)) {
+                        // has arguments passed to value
+                        $value = array_map(fn ($val) => var_export($val, true), $value);
+                        $arguments = implode(', ', $value);
+                    }
+
+                    $payload .= '->'.$value.'(' . $arguments .')';
                 }
             }
 

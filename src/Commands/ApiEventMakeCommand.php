@@ -48,7 +48,7 @@ class ApiEventMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Events\Api\\' . Str::ucfirst($this->getModelName()) ;
+        return $rootNamespace.'\Events\Models\\' . Str::ucfirst($this->getModelName()) ;
     }
 
     /**

@@ -4,6 +4,7 @@ namespace Acadea\Boilerplate\Commands;
 
 use Acadea\Boilerplate\Commands\traits\ParseModel;
 use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
+use Acadea\Fixer\Facade\Fixer;
 use Illuminate\Support\Str;
 
 class SeederMakeCommand extends \Illuminate\Database\Console\Seeds\SeederMakeCommand
@@ -49,10 +50,10 @@ class SeederMakeCommand extends \Illuminate\Database\Console\Seeds\SeederMakeCom
             '{{ tableName }}' => $tableName,
         ];
 
-        return str_replace(
+        return Fixer::format(str_replace(
             array_keys($replace),
             array_values($replace),
             $stub
-        );
+        ));
     }
 }

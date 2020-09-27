@@ -1,6 +1,6 @@
 <?php
 
-namespace Factories\Helpers;
+namespace Database\Factories\Helpers;
 
 if (! function_exists('Factories\Helpers\getRandomModelId')) {
     /**

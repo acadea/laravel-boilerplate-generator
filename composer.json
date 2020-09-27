@@ -1,6 +1,6 @@
 {
-    "name": "acadea/boilerplate",
-    "description": "An opinionated boilerplate generator. Generate boilerplates like repositories, routes, events, api docs and much more!",
+    "name": "acadea/boilerplate-generator",
+    "description": "An opinionated Laravel boilerplate generator. Generate boilerplates like repositories, routes, events, api docs and much more!",
     "keywords": [
         "acadea",
         "laravel-boilerplate-generator"
@@ -16,7 +16,8 @@
         }
     ],
     "require": {
-        "php": "^7.4"
+        "php": "^7.4",
+        "acadea/fixer": "^1.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.16",

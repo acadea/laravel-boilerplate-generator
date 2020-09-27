@@ -11,6 +11,7 @@ use Acadea\Boilerplate\Commands\MigrateMakeCommand;
 use Acadea\Boilerplate\Commands\ModelMakeCommand;
 use Acadea\Boilerplate\Commands\RepositoryMakeCommand;
 use Acadea\Boilerplate\Commands\SeederMakeCommand;
+use Acadea\Boilerplate\Commands\TestMakeCommand;
 use Acadea\Boilerplate\Utils\MigrationCreator;
 use Illuminate\Support\ServiceProvider;
 
@@ -48,6 +49,7 @@ class BoilerplateServiceProvider extends ServiceProvider
                 ControllerMakeCommand::class,
                 FactoryMakeCommand::class,
                 SeederMakeCommand::class,
+                TestMakeCommand::class,
             ]);
         }
 

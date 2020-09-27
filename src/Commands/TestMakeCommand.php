@@ -3,6 +3,7 @@
 namespace Acadea\Boilerplate\Commands;
 
 use Acadea\Boilerplate\Commands\traits\ParseModel;
+use Acadea\Fixer\Facade\Fixer;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
@@ -22,7 +23,7 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
     {
         return file_exists($customPath = $this->laravel->basePath(trim('/stubs/test.api.stub', '/')))
             ? $customPath
-            : __DIR__.'/stubs/test.api.stub';
+            : __DIR__.'/../stubs/test.api.stub';
     }
 
     /**
@@ -68,11 +69,11 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
 
         $replace = $this->buildModelReplacements($replace);
 
-        return str_replace(
+        return Fixer::format(str_replace(
             array_keys($replace),
             array_values($replace),
             parent::buildClass($name)
-        );
+        ));
     }
 
 

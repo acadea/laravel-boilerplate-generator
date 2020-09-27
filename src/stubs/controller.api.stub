@@ -50,7 +50,7 @@ class {{ class }} extends Controller
 
     /**
      * Store a newly created {{ model }} in storage.
-     * (( storeDocs }}
+     * {{ storeDocs }}
      * @apiResource {{ rootNamespace }}Http\Resources\{{ model }}Resource
      * @apiResourceModel {{ rootNamespace }}Models\{{ model }}
      * @param  \Illuminate\Http\Request  $request

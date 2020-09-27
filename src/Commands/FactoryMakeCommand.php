@@ -6,6 +6,7 @@ use Acadea\Boilerplate\Commands\traits\ParseModel;
 use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
 use Acadea\Boilerplate\Utils\DataType;
 use Acadea\Boilerplate\Utils\SchemaStructure;
+use Acadea\Fixer\Facade\Fixer;
 use Symfony\Component\Console\Input\InputOption;
 
 class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryMakeCommand
@@ -69,11 +70,11 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
 
         $stub = $this->replaceNamespace($stub, $name)->replaceClass($stub, $name);
 
-        return str_replace(
+        return Fixer::format(str_replace(
             array_keys($replace),
             array_values($replace),
             $stub
-        );
+        ));
     }
 
     private function generateFactoryFields()
@@ -100,29 +101,29 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
             case 'foreignId':
                 return '\Factories\Helpers\getRandomModelId(\App\Models\\' . $model . '::class)';
             case 'integer':
-                return '$faker->numberBetween(1,100)';
+                return '$this->faker->numberBetween(1,100)';
             case 'boolean':
                 return '\Illuminate\Support\Arr::random([true, false])';
             case 'string':
-                return '$faker->word()';
+                return '$this->faker->word()';
             case 'date':
                 return 'now()->subDays(rand(1,20))';
             case 'float':
-                return '$faker->randomFloat(3)';
+                return '$this->faker->randomFloat(3)';
             case 'text':
-                return '$faker->text()';
+                return '$this->faker->text()';
             case 'timestamp':
                 return 'now()->subDays(rand(1,20))';
             case 'ipAddress':
-                return '$faker->ipv4';
+                return '$this->faker->ipv4';
             case 'json':
-                return '$faker->words(3)';
+                return '$this->faker->words(3)';
             case 'macAddress':
-                return '$faker->macAddress';
+                return '$this->faker->macAddress';
             case 'uuid':
-                return '$faker->uuid';
+                return '$this->faker->uuid';
             case 'year':
-                return '$faker->year';
+                return '$this->faker->year';
             default:
                 return '';
 
