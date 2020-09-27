@@ -22,7 +22,7 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
     {
         return file_exists($customPath = $this->laravel->basePath(trim('/stubs/test.api.stub', '/')))
             ? $customPath
-            : __DIR__.'/stubs/test.api.stub';
+            : __DIR__.'/../stubs/test.api.stub';
     }
 
     /**
