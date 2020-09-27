@@ -69,9 +69,9 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
             if (is_array($attributes)) {
                 foreach ($attributes as $key => $value) {
                     $arguments = '';
-                    if(!is_integer($key) && is_array($value)){
+                    if (! is_integer($key) && is_array($value)) {
                         // has arguments passed to value
-                        $value = array_map(fn($val) => var_export($val, true), $value);
+                        $value = array_map(fn ($val) => var_export($val, true), $value);
                         $arguments = implode(', ', $value);
                     }
 
