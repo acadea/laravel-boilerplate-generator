@@ -3,11 +3,14 @@
 namespace {{ namespace }}\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 
 class {{ class }} extends Model
 {
-    protected $fillable = [ {{ fillables }} ];
+    use HasFactory;
 
+    protected $fillable = [ {{ fillables }} ];
 
     protected $casts = [
         {{ casts }}

@@ -144,6 +144,21 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     }
 
     /**
+     * Create a model factory for the model.
+     *
+     * @return void
+     */
+    protected function createFactory()
+    {
+        $factory = Str::studly(class_basename($this->argument('name')));
+
+        $this->call('boilerplate:factory', [
+            'name' => "{$factory}Factory",
+            '--model' => $this->qualifyClass($this->getNameInput()),
+        ]);
+    }
+
+    /**
      * Create a migration file for the model.
      *
      * @return void
