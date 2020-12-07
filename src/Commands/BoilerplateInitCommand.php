@@ -47,12 +47,12 @@ class BoilerplateInitCommand extends GeneratorCommand
             'spatie/laravel-permission',
         ];
 //
-//        dump('Installing composer packages..');
-//        $this->laravel->make(Composer::class)->run(['require', collect($packages)->join(' ')]);
+        dump('Installing composer packages..');
+        $this->laravel->make(Composer::class)->run(['require', collect($packages)->join(' ')]);
 
-//        collect($packages)->each(function ($package) {
-//            $this->laravel->make(Composer::class)->run(['require', $package]);
-//        });
+        collect($packages)->each(function ($package) {
+            $this->laravel->make(Composer::class)->run(['require', $package]);
+        });
 
         // composer install
 
