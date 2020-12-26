@@ -5,6 +5,7 @@ namespace Acadea\Boilerplate;
 use Acadea\Boilerplate\Commands\ApiEventMakeCommand;
 use Acadea\Boilerplate\Commands\ApiRouteMakeCommand;
 use Acadea\Boilerplate\Commands\BoilerplateInitCommand;
+use Acadea\Boilerplate\Commands\BoilerplateInstallCommand;
 use Acadea\Boilerplate\Commands\ControllerMakeCommand;
 use Acadea\Boilerplate\Commands\FactoryMakeCommand;
 use Acadea\Boilerplate\Commands\MigrateMakeCommand;
@@ -40,12 +41,13 @@ class BoilerplateServiceProvider extends ServiceProvider
 //            }
 
             $this->commands([
+                BoilerplateInitCommand::class,
+                BoilerplateInstallCommand::class,
                 RepositoryMakeCommand::class,
                 ApiEventMakeCommand::class,
                 ModelMakeCommand::class,
                 ApiRouteMakeCommand::class,
                 MigrateMakeCommand::class,
-                BoilerplateInitCommand::class,
                 ControllerMakeCommand::class,
                 FactoryMakeCommand::class,
                 SeederMakeCommand::class,

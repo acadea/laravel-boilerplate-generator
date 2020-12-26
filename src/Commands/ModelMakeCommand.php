@@ -166,7 +166,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
      *
      * @return void
      */
-    protected function createMigration($force = false)
+    protected function createMigration()
     {
         $table = Str::snake(Str::pluralStudly(class_basename($this->argument('name'))));
 
@@ -174,11 +174,9 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             $table = Str::singular($table);
         }
 
-
         $this->call('boilerplate:migration', [
             'name'     => "create_{$table}_table",
             '--create' => $table,
-//            '--force' => $force,  FIXME: enable this
         ]);
     }
 

@@ -3,11 +3,19 @@
 namespace Acadea\Boilerplate\Commands;
 
 use Acadea\Boilerplate\Utils\Composer;
+use Acadea\Boilerplate\Utils\SchemaStructure;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 
 class BoilerplateInitCommand extends GeneratorCommand
 {
+    protected function getStub()
+    {
+
+    }
+
 
     /**
      * The name and signature of the console command.
@@ -21,12 +29,8 @@ class BoilerplateInitCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $description = 'Initialise the required files for the boilerplate to work.';
+    protected $description = 'Generate the recommended boilerplate on based on configured schema.php.';
 
-
-    protected function getStub()
-    {
-    }
 
 
     /**
@@ -36,56 +40,33 @@ class BoilerplateInitCommand extends GeneratorCommand
      */
     public function handle()
     {
-        // TODO: complete this.
+        $schemas = SchemaStructure::get();
 
-//        // composer install packages
-        $packages = [
-            'spatie/laravel-query-builder',
-            'laravel/passport',
-            'laravel/scout',
-            'teamtnt/laravel-scout-tntsearch-driver',
-            'spatie/laravel-permission',
-        ];
-//
-        dump('Installing composer packages..');
-        $this->laravel->make(Composer::class)->run(['require', collect($packages)->join(' ')]);
+        foreach ($schemas as $schema => $fields){
 
-        collect($packages)->each(function ($package) {
-            $this->laravel->make(Composer::class)->run(['require', $package]);
-        });
+            if( substr(strtolower($schema),0, 6) === 'pivot:'){
+                $table = substr($schema, 6);
 
-        // composer install
+                //  only run migration
+                Artisan::call('boilerplate:migration', [
+                    'name'     => "create_{$table}_pivot_table",
+                    '--create' => $table,
+                ]);
+                continue;
+            }
 
-        // TODO: create a dummy structure.php file as well
-        // load stub and push to exception folder
-        $stubs = [
-            '/stubs/preload/json.exception.stub' => '/app/Exceptions/GeneralJsonException.php',
-            '/stubs/preload/baserepository.stub' => '/app/Repositories/BaseRepository.php',
-            '/stubs/preload/trait.disable-foreign-keys.stub' => '/database/seeders/Traits/DisableForeignKeys.php',
-            '/stubs/preload/trait.truncate-table.stub' => '/database/seeders/Traits/TruncateTable.php',
-            '/stubs/preload/factory.helpers.stub' => '/database/factories/helpers/FactoryHelper.php',
-            '/stubs/preload/test.api-test-case.stub' => '/tests/ApiTestCase.php',
-        // traits
+            Artisan::call('boilerplate:model', [
+                'name' => Str::studly($schema),
+                '--all' => true,
+            ]);
 
-        ];
 
-        collect($stubs)->each(function ($dest, $source) {
-            $this->publishStub($source, $dest);
-        });
+        }
+
+
+
+
     }
 
-    public function publishStub($source, $dest)
-    {
-        $stubPath = file_exists($customPath = $this->laravel->basePath(trim($source, '/')))
-            ? $customPath
-            : __DIR__. '/..' . $source;
 
-        $stubContent = $this->files->get($stubPath);
-
-        $path = $this->laravel->basePath($dest);
-
-        $this->makeDirectory($path);
-
-        $this->files->put($path, $this->sortImports($stubContent));
-    }
 }
