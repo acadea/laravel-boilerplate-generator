@@ -45,6 +45,10 @@ the `boilerplate.php` config file.
 
 ### Structure of `schema.php`
 
+Must follow convention
+Pivot: post_tag
+
+
 ```php
 
 return [
@@ -72,6 +76,43 @@ return [
             'foreign' => [
                 'references' => 'id',
                 'on' => 'book_authors',
+            ],
+        ],
+        // will add belongsToMany relationship to model
+        'tags' => [
+            'type' => 'pivot',
+            'pivot' => [
+                'table' => 'post_tag',
+
+            ]
+        ]
+
+    ],
+    
+    // PIVOT TABLE
+    // add 'pivot:' before table name to create pivot migration
+    'pivot:post_tag' => [
+        'post_id' => [
+            // to set this column as primary key in the pivot table
+            'primary' => true,
+            'type' => 'foreignId',
+            'attributes' => [
+                'index'
+            ],
+            'foreign' => [
+                'references' => 'id',
+                'on' => 'posts',
+            ],
+        ],
+        'tag_id' => [
+            'primary' => true,
+            'type' => 'foreignId',
+            'attributes' => [
+                'index'
+            ],
+            'foreign' => [
+                'references' => 'id',
+                'on' => 'tags',
             ],
         ],
 

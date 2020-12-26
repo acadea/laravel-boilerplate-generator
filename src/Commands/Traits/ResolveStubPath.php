@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Acadea\Boilerplate\Commands\traits;
+namespace Acadea\Boilerplate\Commands\Traits;
 
 trait ResolveStubPath
 {

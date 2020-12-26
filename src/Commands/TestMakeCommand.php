@@ -2,7 +2,7 @@
 
 namespace Acadea\Boilerplate\Commands;
 
-use Acadea\Boilerplate\Commands\traits\ParseModel;
+use Acadea\Boilerplate\Commands\Traits\ParseModel;
 use Acadea\Fixer\Facade\Fixer;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

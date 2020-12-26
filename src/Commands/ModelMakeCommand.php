@@ -34,7 +34,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     {
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
 
-        return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
+        return $this->laravel['path'] . '/' . str_replace('\\', '/', $name) . '.php';
     }
 
 
@@ -51,10 +51,10 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         // First we will check to see if the class already exists. If it does, we don't want
         // to create the class and overwrite the user's code. So, we will bail out so the
         // code is untouched. Otherwise, we will continue generating this class' files.
-        if ((! $this->hasOption('force') ||
-                ! $this->option('force')) &&
+        if ((!$this->hasOption('force') ||
+                !$this->option('force')) &&
             $this->alreadyExists($this->getNameInput())) {
-            $this->error($this->type.' already exists!');
+            $this->error($this->type . ' already exists!');
 
             return false;
         }
@@ -74,7 +74,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
         $this->files->put($path, Fixer::format($this->sortImports($content)));
 
-        $this->info($this->type.' created successfully.');
+        $this->info($this->type . ' created successfully.');
     }
 
     /**
@@ -84,8 +84,8 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
      */
     public function handle()
     {
-        if ($this->handleInit() === false && ! $this->option('force')) {
-            return ;
+        if ($this->handleInit() === false && !$this->option('force')) {
+            return;
         }
 
         if ($this->option('all')) {
@@ -93,7 +93,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
             // create resource class
             $this->call('make:resource', [
-                'name' => $name.'Resource',
+                'name' => $name . 'Resource',
             ]);
 
 
@@ -101,14 +101,14 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             $eventClasses = ['Created', 'PermanentlyDeleted', 'Updated', 'Restored', 'Deleted'];
             collect($eventClasses)->each(function ($class) use ($name) {
                 Artisan::call('boilerplate:api-event', [
-                    'name' => $name . $class,
+                    'name'    => $name . $class,
                     '--model' => $name,
                 ]);
             });
 
             // create repo
             $this->call('boilerplate:repository', [
-                'name' => $name.'Repository',
+                'name' => $name . 'Repository',
             ]);
 
             // create routes
@@ -154,7 +154,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $factory = Str::studly(class_basename($this->argument('name')));
 
         $this->call('boilerplate:factory', [
-            'name' => "{$factory}Factory",
+            'name'    => "{$factory}Factory",
             '--model' => $this->qualifyClass($this->getNameInput()),
         ]);
     }
@@ -164,7 +164,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
      *
      * @return void
      */
-    protected function createMigration()
+    protected function createMigration($force = false)
     {
         $table = Str::snake(Str::pluralStudly(class_basename($this->argument('name'))));
 
@@ -172,9 +172,11 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             $table = Str::singular($table);
         }
 
+
         $this->call('boilerplate:migration', [
-            'name' => "create_{$table}_table",
+            'name'     => "create_{$table}_table",
             '--create' => $table,
+//            '--force' => $force,  FIXME: enable this
         ]);
     }
 
@@ -204,23 +206,23 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $modelName = $this->qualifyClass($this->getNameInput());
 
         $this->call('boilerplate:controller', array_filter([
-            'name' => "{$controller}Controller",
+            'name'    => "{$controller}Controller",
             '--model' => $this->option('resource') || $this->option('api') ? $modelName : null,
-            '--api' => $this->option('api'),
+            '--api'   => $this->option('api'),
         ]));
     }
 
     /**
      * Resolve the fully-qualified path to the stub.
      *
-     * @param  string  $stub
+     * @param string $stub
      * @return string
      */
     protected function resolveStubPath($stub)
     {
         return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-                        ? $customPath
-                        : __DIR__. '/..' . $stub;
+            ? $customPath
+            : __DIR__ . '/..' . $stub;
     }
 
 
@@ -250,7 +252,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             // check if field is date time or json
             $type = data_get($field, 'type');
 
-            return  $type === 'timestamp' || $type === 'json';
+            return $type === 'timestamp' || $type === 'json';
         })->map(function ($field, $fieldName) {
             $cast = data_get($field, 'type') === 'json' ? 'array' : 'timestamp';
 
@@ -264,14 +266,16 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     {
         $fields = $this->getModelFields($name);
 
-        $generateRelationMethod = function ($relationName, $relationMethod, $relatedModelName, $foreignKey){
+        $generateRelationMethod = function ($relationName, $relationMethod, $relatedModelName, ...$args) {
+            $args = collect($args)->join('\',\'');
+
             return 'public function ' . $relationName . '()' .
                 '{' .
-                '    return $this->'.$relationMethod.'(\\App\\Models\\'.Str::studly($relatedModelName).'::class, \''. $foreignKey .'\');' .
+                '    return $this->' . $relationMethod . '(\\App\\Models\\' . Str::studly($relatedModelName) . '::class, \'' . $args . '\');' .
                 '}';
         };
 
-        $generateBelongsTo = function ($fieldName) use ($generateRelationMethod){
+        $generateBelongsTo = function ($fieldName) use ($generateRelationMethod) {
             // fieldname should be snakecase
             $fieldName = Str::snake(Str::camel($fieldName));
             $exploded = explode('_', $fieldName);
@@ -281,24 +285,45 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             return $generateRelationMethod($relationName, 'belongsTo', $modelName, $fieldName);
         };
 
-        $generateHasMany = function ($fieldName) use($generateRelationMethod){
-            $fieldName = Str::snake(Str::camel($fieldName));
-            $modelName = Str::studly($fieldName);
-            $relationName = Str::plural($fieldName);
-            return $generateRelationMethod($relationName, 'hasMany', $modelName, $fieldName);
+        $generateHasMany = function ($foreignKey) use ($generateRelationMethod) {
+            $foreignKey = Str::snake(Str::camel($foreignKey));
+            $modelName = Str::studly($foreignKey);
+            $relationName = Str::plural($foreignKey);
+            return $generateRelationMethod($relationName, 'hasMany', $modelName, $foreignKey);
 
+        };
+
+        $generateBelongsToMany = function ($tableName, $foreignKey, $relatedKey) use ($generateRelationMethod) {
+
+            $relatedKey = Str::snake(Str::camel($relatedKey));
+            $exploded = explode('_', $relatedKey);
+
+            $relationName = implode('_', array_slice($exploded, 0, sizeof($exploded) - 1));
+
+            $modelName = Str::studly($relationName);
+
+
+            return $generateRelationMethod(Str::plural($relationName), 'belongsToMany', $modelName, $tableName, $foreignKey, $relatedKey );
         };
 
         // generateHasMany
         // $hasManyModels is an array of models with hasMany relationship to the current model
         $hasManyModels = $this->getRelatedHasManyModels($name);
 
-        $hasManyRelationMethods = collect($hasManyModels)->map(function ($model) use ($generateHasMany){
+        $hasManyRelationMethods = collect($hasManyModels)->map(function ($model) use ($generateHasMany) {
             return $generateHasMany($model);
         });
 
-        // TODO: generate belongsToMany
+        // generate belongsToMany
         // find models where field has pivot
+        $belongsToManyRelationMethods = collect($fields)->filter(function ($field){
+            return data_get($field, 'type') === 'pivot';
+        })->map(function ($field, $fieldName) use ($generateBelongsToMany){
+            $tableName = data_get($field, 'pivot.table');
+            $relatedKey = data_get($field, 'pivot.related_key');
+            $foreignKey = data_get($field, 'pivot.foreign_key');
+            return $generateBelongsToMany($tableName, $foreignKey, $relatedKey);
+        });
 
         $belongsToRelationMethods = collect($fields)->filter(function ($field) {
             return data_get($field, 'foreign');
@@ -307,7 +332,9 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             return $generateBelongsTo($fieldName);
         });
 
-        $relations = $hasManyRelationMethods->concat($belongsToRelationMethods);
+        $relations = $hasManyRelationMethods
+            ->concat($belongsToRelationMethods)
+            ->concat($belongsToManyRelationMethods);
 
         return str_replace(['{{ relations }}', '{{relations}}'], $relations->join("\n"), $stub);
     }
@@ -321,7 +348,13 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $structures = SchemaStructure::get();
 
         $filtered = collect($structures)->filter(function ($schema, $modelKey) use ($modelName) {
-            $foreignKeyFields = collect($schema)->filter(fn ($field)=> data_get($field, 'foreign'));
+            if(substr($modelKey, 0, 6) === 'pivot:'){
+                return false;
+            }
+            $foreignKeyFields = collect($schema)
+                ->filter(function ($fields, $schemaName) {
+                    return data_get($fields, 'foreign');
+                });
 
             // check the 'on' is related to current model
             $ons = data_get($foreignKeyFields, '*.foreign.on');

@@ -2,8 +2,8 @@
 
 namespace Acadea\Boilerplate\Commands;
 
-use Acadea\Boilerplate\Commands\traits\ParseModel;
-use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
+use Acadea\Boilerplate\Commands\Traits\ParseModel;
+use Acadea\Boilerplate\Commands\Traits\ResolveStubPath;
 use Acadea\Fixer\Facade\Fixer;
 use Illuminate\Support\Str;
 

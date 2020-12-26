@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Acadea\Boilerplate\Commands\traits;
+namespace Acadea\Boilerplate\Commands\Traits;
 
 use Illuminate\Support\Str;
 

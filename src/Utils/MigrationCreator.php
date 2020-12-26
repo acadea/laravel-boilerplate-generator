@@ -56,15 +56,19 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
         }
         $structure = require $schemaPath;
 
-
         $fields = data_get($structure, strtolower(Str::singular($table)));
 
         $strings = collect($fields)->map(function ($props, $fieldName) {
             $fieldName = Str::snake(Str::camel($fieldName));
+
+            // skipping pivot entry
+            if(data_get($props, 'type') === 'pivot'){
+                return '';
+            }
+
             $payload = '$table->'.data_get($props, 'type') . '(' . var_export($fieldName, true) . ')';
 
             $attributes = data_get($props, 'attributes');
-
 
             if (is_array($attributes)) {
                 foreach ($attributes as $key => $value) {
@@ -75,11 +79,9 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
                         $value = array_map(fn ($val) => var_export($val, true), $value);
                         $arguments = implode(', ', $value);
                     }
-
                     $payload .= '->'.$value.'(' . $arguments .')';
                 }
             }
-
 
             if (($foreign = data_get($props, 'foreign')) !== null) {
                 $payload .= ';';
@@ -90,8 +92,8 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
 
             return $payload . ';';
         });
-        
 
-        return implode("\n", array_values($strings->toArray()));
+        return $strings->values()->join("\n");
+//        implode("\n", array_values($strings->toArray()));
     }
 }
