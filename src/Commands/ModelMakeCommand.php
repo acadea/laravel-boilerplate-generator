@@ -3,6 +3,7 @@
 namespace Acadea\Boilerplate\Commands;
 
 use Acadea\Boilerplate\Utils\SchemaStructure;
+use Acadea\Fixer\Facade\Fixer;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 
@@ -33,7 +34,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     {
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
 
-        return $this->laravel['path'].'/Models/'.str_replace('\\', '/', $name).'.php';
+        return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
 
 
@@ -71,7 +72,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
         $content = $this->replaceRelations($content, $this->getNameInput());
 
-        $this->files->put($path, $this->sortImports($content));
+        $this->files->put($path, Fixer::format($this->sortImports($content)));
 
         $this->info($this->type.' created successfully.');
     }
@@ -263,29 +264,71 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     {
         $fields = $this->getModelFields($name);
 
-        $generateRelationFunction = function ($fieldName) use ($name) {
-
-            // fieldname should be snakecase
-            $camelName = Str::camel($fieldName);
-            $fieldName = Str::snake($camelName);
-            $exploded = explode('_', $fieldName);
-            // get rid of last element, which is usually 'id'
-            $relationName = implode('_', array_slice($exploded, 0, sizeof($exploded) - 1));
-
+        $generateRelationMethod = function ($relationName, $relationMethod, $relatedModelName, $foreignKey){
             return 'public function ' . $relationName . '()' .
                 '{' .
-                '    return $this->belongsTo(\\App\\Models\\'.Str::studly($name).'::class, \''. $fieldName .'\');' .
+                '    return $this->'.$relationMethod.'(\\App\\Models\\'.Str::studly($relatedModelName).'::class, \''. $foreignKey .'\');' .
                 '}';
         };
 
-        $fields = collect($fields)->filter(function ($field) {
-            return data_get($field, 'foreign');
-        })->map(function ($field, $fieldName) use ($generateRelationFunction) {
-            // TODO: what about pivot table?
-            // fieldName looks something like author_id
-            return $generateRelationFunction($fieldName);
+        $generateBelongsTo = function ($fieldName) use ($generateRelationMethod){
+            // fieldname should be snakecase
+            $fieldName = Str::snake(Str::camel($fieldName));
+            $exploded = explode('_', $fieldName);
+            // get rid of last element, which is usually 'id'
+            $relationName = implode('_', array_slice($exploded, 0, sizeof($exploded) - 1));
+            $modelName = Str::studly($relationName);
+            return $generateRelationMethod($relationName, 'belongsTo', $modelName, $fieldName);
+        };
+
+        $generateHasMany = function ($fieldName) use($generateRelationMethod){
+            $fieldName = Str::snake(Str::camel($fieldName));
+            $modelName = Str::studly($fieldName);
+            $relationName = Str::plural($fieldName);
+            return $generateRelationMethod($relationName, 'hasMany', $modelName, $fieldName);
+
+        };
+
+        // generateHasMany
+        // $hasManyModels is an array of models with hasMany relationship to the current model
+        $hasManyModels = $this->getRelatedHasManyModels($name);
+
+        $hasManyRelationMethods = collect($hasManyModels)->map(function ($model) use ($generateHasMany){
+            return $generateHasMany($model);
         });
 
-        return str_replace(['{{ relations }}', '{{relations}}'], $fields->join("\n"), $stub);
+        // TODO: generate belongsToMany
+        // find models where field has pivot
+
+        $belongsToRelationMethods = collect($fields)->filter(function ($field) {
+            return data_get($field, 'foreign');
+        })->map(function ($field, $fieldName) use ($generateBelongsTo, $name) {
+            // fieldName looks something like author_id
+            return $generateBelongsTo($fieldName);
+        });
+
+        $relations = $hasManyRelationMethods->concat($belongsToRelationMethods);
+
+        return str_replace(['{{ relations }}', '{{relations}}'], $relations->join("\n"), $stub);
+    }
+
+    /**
+     * find models where field has foreign on current model
+     * @param string $modelName
+     */
+    private function getRelatedHasManyModels(string $modelName)
+    {
+        $structures = SchemaStructure::get();
+
+        $filtered = collect($structures)->filter(function ($schema, $modelKey) use ($modelName) {
+            $foreignKeyFields = collect($schema)->filter(fn ($field)=> data_get($field, 'foreign'));
+
+            // check the 'on' is related to current model
+            $ons = data_get($foreignKeyFields, '*.foreign.on');
+
+            return collect($ons)->first(fn($on) => Str::plural(Str::snake($modelName)) === Str::plural($on));
+        });
+
+        return $filtered->keys();
     }
 }

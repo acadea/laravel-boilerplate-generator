@@ -1,15 +1,14 @@
-
 # Laravel Boilerplate Generator
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/acadea/laravel-boilerplate-generator.svg?style=flat-square)](https://packagist.org/packages/acadea/laravel-boilerplate-generator)
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/acadea/laravel-boilerplate-generator/run-tests?label=tests)](https://github.com/acadea/laravel-boilerplate-generator/actions?query=workflow%3Arun-tests+branch%3Amaster)
 [![Total Downloads](https://img.shields.io/packagist/dt/acadea/laravel-boilerplate-generator.svg?style=flat-square)](https://packagist.org/packages/acadea/laravel-boilerplate-generator)
 
-
 An opinionated boilerplate generator. Generate boilerplates like repositories, routes, events, api docs and much more!
 
 ## NOTE
-This project is still under development and unusable. 
+
+This project is still under development and unusable.
 
 ## Installation
 
@@ -27,6 +26,7 @@ php artisan migrate
 ```
 
 You can publish the config file with:
+
 ```bash
 php artisan vendor:publish --provider="Acadea\Boilerplate\BoilerplateServiceProvider" --tag="config"
 ```
@@ -40,10 +40,43 @@ return [
 
 ## Usage
 
-First, define a `schema.php` file in the `database` folder. You can overwrite the default file path in the `boilerplate.php` config file. 
+First, define a `schema.php` file in the `database` folder. You can overwrite the default file path in
+the `boilerplate.php` config file.
 
 ### Structure of `schema.php`
-```
+
+```php
+
+return [
+    'post' => [
+        'title' => [
+            // any column type supported by eloquent
+            // https://laravel.com/docs/8.x/migrations#available-column-types
+            'type' => 'string', 
+            // attributes are column modifier  
+            // https://laravel.com/docs/8.x/migrations#column-modifiers
+            'attributes' => [
+                // put a flat string if no argument to pass to the modifier
+                'nullable',  
+                // if we need to pass arguments to the modifier
+                // array key is the modifier method, value should be an array of arguments value to pass to the modifier
+                'default' => ['some post'],   
+            ], 
+        ],
+        'body' => [
+            'type' => 'mediumText',
+            'attributes' => ['nullable'],
+        ],
+        'book_author_id' => [
+            'type' => 'foreignId',
+            'foreign' => [
+                'references' => 'id',
+                'on' => 'book_authors',
+            ],
+        ],
+
+    ],
+];
 ```
 
 ``` php
@@ -52,8 +85,8 @@ echo $skeleton->echoPhrase('Hello, Acadea!');
 ```
 
 ## Caveats
-1. `hasMany` Relationship is not loaded to the boilerplate
 
+1. `hasMany` Relationship is not loaded to the boilerplate
 
 ## Testing
 
