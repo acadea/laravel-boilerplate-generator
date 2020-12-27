@@ -39,7 +39,7 @@ class DataType
         if (collect($timestamps)->contains($dataType)) {
             return 'timestamp';
         }
-        if (collect($intArrays)->contains($dataType)) {
+        if(collect($intArrays)->contains($dataType)){
             return 'intArrays';
         }
 //        if ($dataType === 'ipAddress') {

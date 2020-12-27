@@ -32,8 +32,8 @@ return [
                 'table' => 'post_tag',
                 'related_key' => 'post_id',
                 'foreign_key' => 'tag_id',
-            ],
-        ],
+            ]
+        ]
 
     ],
 
@@ -42,7 +42,7 @@ return [
             'primary' => true,
             'type' => 'foreignId',
             'attributes' => [
-                'index',
+                'index'
             ],
             'foreign' => [
                 'references' => 'id',
@@ -53,7 +53,7 @@ return [
             'primary' => true,
             'type' => 'foreignId',
             'attributes' => [
-                'index',
+                'index'
             ],
             'foreign' => [
                 'references' => 'id',

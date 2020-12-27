@@ -2,6 +2,7 @@
 
 namespace Acadea\Boilerplate\Commands;
 
+use Acadea\Boilerplate\Utils\Composer;
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
@@ -12,6 +13,7 @@ class BoilerplateInitCommand extends GeneratorCommand
 {
     protected function getStub()
     {
+
     }
 
 
@@ -47,15 +49,15 @@ class BoilerplateInitCommand extends GeneratorCommand
 //            '--create' => $table,
 //        ]);
 //        return ;
-        foreach ($schemas as $schema => $fields) {
-            if (substr(strtolower($schema), 0, 6) === 'pivot:') {
+        foreach ($schemas as $schema => $fields){
+
+            if( substr(strtolower($schema),0, 6) === 'pivot:'){
 
                 //  only run migration
                 Artisan::call('boilerplate:migration', [
-                    'name' => "create_{$table}_pivot_table",
+                    'name'     => "create_{$table}_pivot_table",
                     '--create' => $table,
                 ]);
-
                 continue;
             }
 
@@ -66,6 +68,10 @@ class BoilerplateInitCommand extends GeneratorCommand
                 '--force' => true,
                 '--api' => true,
             ]);
+
         }
+
     }
+
+
 }
