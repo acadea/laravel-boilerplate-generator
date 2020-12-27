@@ -93,6 +93,17 @@ class RepositoryMakeCommand extends GeneratorCommand
         })->join("\n");
     }
 
+    public function replaceFilters()
+    {
+        $fields = $this->getSchemaFields();
+
+        return collect($fields)
+            ->filter(fn($field) => data_get($field, 'type') !== 'pivot')
+            ->keys()
+            ->join('\', \'');
+
+    }
+
     public function replaceManyToManySync()
     {
         $fields = $this->getSchemaFields();
@@ -116,6 +127,8 @@ class RepositoryMakeCommand extends GeneratorCommand
             '{{createFields}}' => $this->replaceCreateFields(),
             '{{ updateFields }}' => $this->replaceUpdateFields(),
             '{{updateFields}}' => $this->replaceUpdateFields(),
+            '{{filters}}' => $this->replaceFilters(),
+            '{{ filters }}' => $this->replaceFilters(),
             '{{manyToManySync}}' => $this->replaceManyToManySync(),
             '{{ manyToManySync }}' => $this->replaceManyToManySync(),
         ];

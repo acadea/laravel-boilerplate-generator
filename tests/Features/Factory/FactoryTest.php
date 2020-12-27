@@ -29,7 +29,7 @@ class FactoryTest extends TestCase
 
         $generated = File::get($this->app->path('../database/factories/PostFactory.php'));
 
-        $source = File::get(self::TEST_ASSERT_FILES_PATH . '/PostFactory.php');
+        $source = File::get(self::TEST_ASSERT_FILES_PATH . '/PostFactory.php.stub');
 
         $this->assertSame(StringHelper::clean($source), StringHelper::clean($generated));
 

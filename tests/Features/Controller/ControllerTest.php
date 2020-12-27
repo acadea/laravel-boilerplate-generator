@@ -28,7 +28,7 @@ class ControllerTest extends TestCase
         $path = $this->app->path('Http/Controllers/Api/V1/PostController.php');
         $file = File::get($path);
 
-        $sourceOfTruth = File::get(self::TEST_ASSERT_FILES_PATH . '/PostController.php');
+        $sourceOfTruth = File::get(self::TEST_ASSERT_FILES_PATH . '/PostController.php.stub');
         // verify generated file is the same as source of truth
         $this->assertEquals(StringHelper::clean($sourceOfTruth), StringHelper::clean($file), 'not the same as known truth');
     }

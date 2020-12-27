@@ -15,7 +15,6 @@ class RepositoryTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        // generate a test controller based on fake model
 
         Artisan::call('boilerplate:model', [
             'name' => 'Post'
@@ -26,17 +25,17 @@ class RepositoryTest extends TestCase
         ]);
 
         $this->beforeApplicationDestroyed(function (){
-//            File::delete($this->app->path('Repository/Api/V1/PostRepository.php'));
+            File::delete($this->app->path('Repository/Api/V1/PostRepository.php'));
         });
     }
 
-    public function test_generated_controller_is_correct()
+    public function test_generated_repository_is_correct()
     {
-        // get controller instance
+
         $path = $this->app->path('Repositories/Api/V1/PostRepository.php');
         $file = File::get($path);
 
-        $sourceOfTruth = File::get(self::TEST_ASSERT_FILES_PATH . '/PostRepository.php');
+        $sourceOfTruth = File::get(self::TEST_ASSERT_FILES_PATH . '/PostRepository.php.stub');
         // verify generated file is the same as source of truth
         $this->assertEquals(StringHelper::clean($sourceOfTruth), StringHelper::clean($file), 'not the same as known truth');
     }

@@ -19,7 +19,7 @@ class {{ model }}Repository extends BaseRepository
     {
         parent::__construct();
         $this->allowedFilters = [
-            'name',
+            '{{ filters }}'
         ];
     }
 

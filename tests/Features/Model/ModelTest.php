@@ -32,7 +32,7 @@ class ModelTest extends TestCase
 
         $generated = StringHelper::clean($generated);
 
-        $sourceOfTruth = File::get(self::TEST_ASSERT_FILES_PATH . '/Post.php');
+        $sourceOfTruth = File::get(self::TEST_ASSERT_FILES_PATH . '/Post.php.stub');
 
         $sourceOfTruth = StringHelper::clean($sourceOfTruth);
 
