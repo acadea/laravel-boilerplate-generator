@@ -100,6 +100,8 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
         switch (DataType::standardise($dataType)) {
             case 'foreignId':
                 return '\Factories\Helpers\getRandomModelId(\App\Models\\' . $model . '::class)';
+            case 'intArrays':
+                return '[]';
             case 'integer':
                 return '$this->faker->numberBetween(1,100)';
             case 'boolean':
@@ -125,7 +127,7 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
             case 'year':
                 return '$this->faker->year';
             default:
-                return '';
+                return '\'\'';
 
         }
     }
