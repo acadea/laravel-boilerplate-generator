@@ -2,8 +2,10 @@
 
 namespace Acadea\Boilerplate\Tests\Features\Controller;
 
+use Acadea\Boilerplate\Tests\Helpers\StringHelper;
 use Acadea\Boilerplate\Tests\TestCase;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 
 class ControllerTest extends TestCase
 {
@@ -13,32 +15,18 @@ class ControllerTest extends TestCase
         parent::setUp();
         // generate a test controller based on fake model
 
-        Artisan::call('boilerplate:controller PostController --api');
+        Artisan::call('boilerplate:controller PostController --api --force');
     }
 
-
-    // test has index method
-    public function test_has_index_method()
+    public function test_generated_controller_is_correct()
     {
-        // FIXME: can't get this working
         // get controller instance
-        require '../../../vendor/orchestra/testbench-core/laravel/app/Http/Controllers/Api/V1/PostController.php';
-        $instance = $this->app->make('App\\Http\\Controllers\\Api\\V1');
-        dd($instance);
-        $reflection = (new \ReflectionClass('App\\Http\\Controllers\\Api\\V1'));
-        $hasIndex = $reflection->hasMethod('index');
-        $this->assertTrue($hasIndex);
+        $path = __DIR__ . '/../../../vendor/orchestra/testbench-core/laravel/app/Http/Controllers/Api/V1/PostController.php';
+        $file = File::get($path);
+
+        $sourceOfTruth = File::get(self::TEST_ASSERT_FILES_PATH . '/PostController.php');
+        // verify generated file is the same as source of truth
+        $this->assertEquals(StringHelper::clean($sourceOfTruth), StringHelper::clean($file), 'not the same as known truth');
     }
-
-    // test has store method
-    // test has update method
-    // test has destroy method
-    // test has show method
-
-    // test doc
-
-    // test store method
-
-
 
 }

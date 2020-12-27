@@ -16,6 +16,7 @@ class DataType
         $timestamps = [ 'nullableTimestamps', 'time', 'timeTz', 'timestamp', 'timestampTz'];
         $floats = ['decimal', 'double', 'float', 'unsignedDecimal'];
         $paragraphs = ['longText', 'mediumText', 'text'];
+        $intArrays = ['pivot'];
 
         if (collect($integers)->contains($dataType)) {
             return 'integer';
@@ -37,6 +38,9 @@ class DataType
         }
         if (collect($timestamps)->contains($dataType)) {
             return 'timestamp';
+        }
+        if(collect($intArrays)->contains($dataType)){
+            return 'intArrays';
         }
 //        if ($dataType === 'ipAddress') {
 //            return $faker->ipv4;

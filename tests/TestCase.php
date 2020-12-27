@@ -8,6 +8,9 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    const TEST_FILE_PATH = __DIR__ . '/files';
+    const TEST_ASSERT_FILES_PATH = self::TEST_FILE_PATH . '/assert-sources';
+
     public function setUp(): void
     {
         parent::setUp();

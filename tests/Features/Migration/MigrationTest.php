@@ -8,6 +8,11 @@ use Acadea\Boilerplate\Tests\TestCase;
 
 class MigrationTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+    }
+
 
     public function test_generated_migration_file_has_the_correct_name()
     {

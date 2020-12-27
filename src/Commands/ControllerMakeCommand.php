@@ -171,28 +171,31 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         // for each field generate docs and example
         return collect($fields)->map(function ($value, $field) {
             return $this->generateBodyParams($field, $value, true);
-        })->join("\n*");
+        })->join("\n     * ");
     }
 
     protected function generateExample($dataType)
     {
         $faker = $this->laravel->make(Generator::class);
+        $faker->seed(1);
 
         $dataType = DataType::standardise($dataType);
 
         switch ($dataType) {
-            case 'integer' || 'foreignId':
+            case 'integer':
+                return 1;
+            case 'foreignId':
                 return 1;
             case 'boolean':
                 return Arr::random([true, false]);
             case 'string':
-                return $faker->text;
+                return $faker->realText(20);
             case 'date':
                 return $faker->date();
             case 'float':
                 return $faker->randomNumber(3);
             case 'text':
-                return $faker->paragraph(3);
+                return $faker->realText(80);
             case 'timestamp':
                 return $faker->unixTime();
             case 'ipAddress':
@@ -205,6 +208,8 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
                 return $faker->uuid;
             case 'year':
                 return $faker->year;
+            case 'intArrays':
+                return '[1, 2]';
             default:
                 return '';
         }
@@ -216,9 +221,9 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         $fields = $this->getDbStructure();
 
         // for each field generate docs and example
-        return collect($fields)->map(function ($value, $field) {
-            return $this->generateBodyParams($field, $value, false);
-        })->join("\n*");
+        return collect($fields)->map(function ($value, $fieldName) {
+            return $this->generateBodyParams($fieldName, $value, false);
+        })->join("\n     * ");
     }
 
     public function generateShowDocs()
