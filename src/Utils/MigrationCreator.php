@@ -10,11 +10,9 @@ use League\Flysystem\FileNotFoundException;
 
 class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
 {
-
     private function isPivot($name)
     {
         return substr(strtolower($name), 0, 6) === 'pivot:';
-
     }
     /**
      * Get the migration stub file.
@@ -31,11 +29,11 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
             $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.stub')
                 ? $customPath
                 : $this->stubPath().'/migration.stub';
-        } elseif ($create && !$isPivot) {
+        } elseif ($create && ! $isPivot) {
             $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.create.stub')
                 ? $customPath
                 : $this->stubPath().'/migration.create.stub';
-        } elseif ($create && $isPivot){
+        } elseif ($create && $isPivot) {
             $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.pivot.stub')
                 ? $customPath
                 : $this->stubPath().'/migration.pivot.stub';
@@ -67,10 +65,11 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
         // $name is something like: create_veges_table
         $splitted = explode('_', $name);
         $isPivot = $this->isPivot($splitted[1]);
-        if($isPivot){
+        if ($isPivot) {
             $splitted[1] = substr($splitted[1], 6);
             $name = implode('_', $splitted);
         }
+
         return $name;
     }
 
@@ -136,7 +135,7 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
             $fieldName = Str::snake(Str::camel($fieldName));
 
             // skipping pivot entry
-            if(data_get($props, 'type') === 'pivot'){
+            if (data_get($props, 'type') === 'pivot') {
                 return '';
             }
 
@@ -168,11 +167,11 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
         });
 
         // filter all primary keys
-        $primaryKeys = collect($fields)->filter(function ($field){
+        $primaryKeys = collect($fields)->filter(function ($field) {
             return data_get($field, 'primary');
         })->keys();
 
-        if( $primaryKeys->isNotEmpty()){
+        if ($primaryKeys->isNotEmpty()) {
             // get all with
             $payload = '$table->primary([\'' . $primaryKeys->join('\', \'') . '\']);';
             $strings = $strings->add($payload);

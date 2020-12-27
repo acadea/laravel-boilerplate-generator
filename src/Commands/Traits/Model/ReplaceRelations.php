@@ -3,10 +3,8 @@
 
 namespace Acadea\Boilerplate\Commands\Traits\Model;
 
-
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Illuminate\Support\Str;
-
 
 trait ReplaceRelations
 {
@@ -19,7 +17,7 @@ trait ReplaceRelations
         $structures = SchemaStructure::get();
 
         $filtered = collect($structures)->filter(function ($schema, $modelKey) use ($modelName) {
-            if(substr($modelKey, 0, 6) === 'pivot:'){
+            if (substr($modelKey, 0, 6) === 'pivot:') {
                 return false;
             }
             $foreignKeyFields = collect($schema)
@@ -30,7 +28,7 @@ trait ReplaceRelations
             // check the 'on' is related to current model
             $ons = data_get($foreignKeyFields, '*.foreign.on');
 
-            return collect($ons)->first(fn($on) => Str::plural(Str::snake($modelName)) === Str::plural($on));
+            return collect($ons)->first(fn ($on) => Str::plural(Str::snake($modelName)) === Str::plural($on));
         });
 
         return $filtered->keys();
@@ -54,6 +52,7 @@ trait ReplaceRelations
         // get rid of last element, which is usually 'id'
         $relationName = implode('_', array_slice($exploded, 0, sizeof($exploded) - 1));
         $modelName = Str::studly($relationName);
+
         return $this->generateRelationMethod($relationName, 'belongsTo', $modelName, $foreignKey);
     }
 
@@ -62,6 +61,7 @@ trait ReplaceRelations
         $foreignKey = Str::snake(Str::camel($foreignKey));
         $modelName = Str::studly($foreignKey);
         $relationName = Str::plural($foreignKey);
+
         return $this->generateRelationMethod($relationName, 'hasMany', $modelName, $foreignKey);
     }
 
@@ -73,7 +73,7 @@ trait ReplaceRelations
         $relationName = implode('_', array_slice($exploded, 0, sizeof($exploded) - 1));
         $modelName = Str::studly($relationName);
 
-        return $this->generateRelationMethod(Str::plural($relationName), 'belongsToMany', $modelName, $tableName, $foreignKey, $relatedKey );
+        return $this->generateRelationMethod(Str::plural($relationName), 'belongsToMany', $modelName, $tableName, $foreignKey, $relatedKey);
     }
 
     protected function replaceRelations($stub, $name)
@@ -90,12 +90,13 @@ trait ReplaceRelations
 
         // generate belongsToMany
         // find models where field has pivot
-        $belongsToManyRelationMethods = collect($fields)->filter(function ($field){
+        $belongsToManyRelationMethods = collect($fields)->filter(function ($field) {
             return data_get($field, 'type') === 'pivot';
         })->map(function ($field, $fieldName) {
             $tableName = data_get($field, 'pivot.table');
             $relatedKey = data_get($field, 'pivot.related_key');
             $foreignKey = data_get($field, 'pivot.foreign_key');
+
             return $this->generateBelongsToMany($tableName, $foreignKey, $relatedKey);
         });
 
@@ -112,5 +113,4 @@ trait ReplaceRelations
 
         return str_replace(['{{ relations }}', '{{relations}}'], $relations->join("\n"), $stub);
     }
-
 }

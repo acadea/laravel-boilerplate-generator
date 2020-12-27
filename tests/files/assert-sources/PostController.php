@@ -7,7 +7,6 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Repositories\Api\V1\PostRepository;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -38,8 +37,8 @@ class PostController extends Controller
 
         $posts = $repository->buildQuery()->with(self::RELATIONSHIPS);
 
-        if($search = $request->search){
-            $posts = $repository->search($search)->query(function (Builder $builder) use($posts){
+        if ($search = $request->search) {
+            $posts = $repository->search($search)->query(function (Builder $builder) use ($posts) {
                 $builder->with(self::RELATIONSHIPS);
                 $builder->whereIn('id', $posts->get()->pluck('id'));
             });
@@ -63,6 +62,7 @@ class PostController extends Controller
     public function store(Request $request, PostRepository $repository)
     {
         $created = $repository->create($request->toArray());
+
         return (new PostResource($created))->response();
     }
 
@@ -97,6 +97,7 @@ class PostController extends Controller
     public function update(Request $request, Post $post, PostRepository $repository)
     {
         $updated = $repository->update($post, $request->toArray());
+
         return (new PostResource($updated))->response();
     }
 

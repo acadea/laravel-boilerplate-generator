@@ -28,5 +28,4 @@ class ControllerTest extends TestCase
         // verify generated file is the same as source of truth
         $this->assertEquals(StringHelper::clean($sourceOfTruth), StringHelper::clean($file), 'not the same as known truth');
     }
-
 }

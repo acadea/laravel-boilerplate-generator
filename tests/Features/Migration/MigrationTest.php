@@ -3,7 +3,6 @@
 
 namespace Acadea\Boilerplate\Tests\Features\Migration;
 
-
 use Acadea\Boilerplate\Tests\TestCase;
 
 class MigrationTest extends TestCase
@@ -27,5 +26,4 @@ class MigrationTest extends TestCase
 
         // test pivot
     }
-
 }
