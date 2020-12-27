@@ -17,7 +17,7 @@ class ControllerTest extends TestCase
 
         Artisan::call('boilerplate:controller PostController --api --force');
 
-        $this->beforeApplicationDestroyed(function (){
+        $this->beforeApplicationDestroyed(function () {
             File::delete($this->app->path('Http/Controllers/Api/V1/PostController.php'));
         });
     }
@@ -32,5 +32,4 @@ class ControllerTest extends TestCase
         // verify generated file is the same as source of truth
         $this->assertEquals(StringHelper::clean($sourceOfTruth), StringHelper::clean($file), 'not the same as known truth');
     }
-
 }

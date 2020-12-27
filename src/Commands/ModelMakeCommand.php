@@ -36,6 +36,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     public function getPath($name)
     {
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
+
         return $this->laravel->basePath() . '/app/' . str_replace('\\', '/', $name) . '.php';
     }
 
@@ -53,8 +54,8 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         // First we will check to see if the class already exists. If it does, we don't want
         // to create the class and overwrite the user's code. So, we will bail out so the
         // code is untouched. Otherwise, we will continue generating this class' files.
-        if ((!$this->hasOption('force') ||
-                !$this->option('force')) &&
+        if ((! $this->hasOption('force') ||
+                ! $this->option('force')) &&
             $this->alreadyExists($this->getNameInput())) {
             $this->error($this->type . ' already exists!');
 
@@ -86,7 +87,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
      */
     public function handle()
     {
-        if ($this->handleInit() === false && !$this->option('force')) {
+        if ($this->handleInit() === false && ! $this->option('force')) {
             return;
         }
 
@@ -103,7 +104,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             $eventClasses = ['Created', 'PermanentlyDeleted', 'Updated', 'Restored', 'Deleted'];
             collect($eventClasses)->each(function ($class) use ($name) {
                 Artisan::call('boilerplate:api-event', [
-                    'name'    => $name . $class,
+                    'name' => $name . $class,
                     '--model' => $name,
                 ]);
             });
@@ -156,7 +157,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $factory = Str::studly(class_basename($this->argument('name')));
 
         $this->call('boilerplate:factory', [
-            'name'    => "{$factory}Factory",
+            'name' => "{$factory}Factory",
             '--model' => $this->qualifyClass($this->getNameInput()),
         ]);
     }
@@ -175,7 +176,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         }
 
         $this->call('boilerplate:migration', [
-            'name'     => "create_{$table}_table",
+            'name' => "create_{$table}_table",
             '--create' => $table,
         ]);
     }
@@ -206,9 +207,9 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $modelName = $this->qualifyClass($this->getNameInput());
 
         $this->call('boilerplate:controller', array_filter([
-            'name'    => "{$controller}Controller",
+            'name' => "{$controller}Controller",
             '--model' => $this->option('resource') || $this->option('api') ? $modelName : null,
-            '--api'   => $this->option('api'),
+            '--api' => $this->option('api'),
         ]));
     }
 
@@ -261,7 +262,4 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
         return str_replace(['{{ casts }}', '{{casts}}'], $fields->join(','), $stub);
     }
-
-
-
 }

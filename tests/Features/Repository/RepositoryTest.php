@@ -3,7 +3,6 @@
 
 namespace Acadea\Boilerplate\Tests\Features\Repository;
 
-
 use Acadea\Boilerplate\Tests\Helpers\StringHelper;
 use Acadea\Boilerplate\Tests\TestCase;
 use Illuminate\Support\Facades\Artisan;
@@ -17,21 +16,20 @@ class RepositoryTest extends TestCase
         parent::setUp();
 
         Artisan::call('boilerplate:model', [
-            'name' => 'Post'
+            'name' => 'Post',
         ]);
         require $this->app->path('Models/Post.php');
         Artisan::call('boilerplate:repository', [
             'name' => 'PostRepository',
         ]);
 
-        $this->beforeApplicationDestroyed(function (){
+        $this->beforeApplicationDestroyed(function () {
             File::delete($this->app->path('Repository/Api/V1/PostRepository.php'));
         });
     }
 
     public function test_generated_repository_is_correct()
     {
-
         $path = $this->app->path('Repositories/Api/V1/PostRepository.php');
         $file = File::get($path);
 

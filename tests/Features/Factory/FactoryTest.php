@@ -3,7 +3,6 @@
 
 namespace Acadea\Boilerplate\Tests\Features\Factory;
 
-
 use Acadea\Boilerplate\Tests\Helpers\StringHelper;
 use Acadea\Boilerplate\Tests\TestCase;
 use Illuminate\Support\Facades\Artisan;
@@ -15,7 +14,7 @@ class FactoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->beforeApplicationDestroyed(function (){
+        $this->beforeApplicationDestroyed(function () {
             File::delete($this->app->path('../database/factories/PostFactory.php'));
         });
     }
@@ -23,7 +22,7 @@ class FactoryTest extends TestCase
     public function test_factory_generated_is_the_same()
     {
         Artisan::call('boilerplate:factory', [
-            'name'    => "PostFactory",
+            'name' => "PostFactory",
             '--model' => 'Post',
         ]);
 
@@ -32,8 +31,5 @@ class FactoryTest extends TestCase
         $source = File::get(self::TEST_ASSERT_FILES_PATH . '/PostFactory.php.stub');
 
         $this->assertSame(StringHelper::clean($source), StringHelper::clean($generated));
-
-
     }
-
 }

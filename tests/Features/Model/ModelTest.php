@@ -3,7 +3,6 @@
 
 namespace Acadea\Boilerplate\Tests\Features\Model;
 
-
 use Acadea\Boilerplate\Tests\Helpers\StringHelper;
 use Acadea\Boilerplate\Tests\TestCase;
 use Illuminate\Support\Facades\Artisan;
@@ -15,7 +14,7 @@ class ModelTest extends TestCase
     {
         parent::setUp();
 
-        $this->beforeApplicationDestroyed(function (){
+        $this->beforeApplicationDestroyed(function () {
             File::delete($this->app->path('Models/Post.php'));
         });
     }
@@ -37,7 +36,6 @@ class ModelTest extends TestCase
         $sourceOfTruth = StringHelper::clean($sourceOfTruth);
 
         $this->assertSame($sourceOfTruth, $generated);
-
     }
 
 //    public function test_all_option_will_generate_all_the_boilerplate_files()
@@ -63,5 +61,4 @@ class ModelTest extends TestCase
 //        // verify there is a controller
 //
 //    }
-
 }

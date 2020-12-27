@@ -73,10 +73,11 @@ class RepositoryMakeCommand extends GeneratorCommand
     {
         $fields = $this->getSchemaFields();
 
-        return collect($fields)->map(function ($field, $fieldName){
-            if(data_get($field, 'type') === 'pivot'){
+        return collect($fields)->map(function ($field, $fieldName) {
+            if (data_get($field, 'type') === 'pivot') {
                 return '';
             }
+
             return '\'' . $fieldName . '\' => data_get($data, \'' . $fieldName . '\'),';
         })->join("\n");
     }
@@ -85,10 +86,11 @@ class RepositoryMakeCommand extends GeneratorCommand
     {
         $fields = $this->getSchemaFields();
 
-        return collect($fields)->map(function ($field, $fieldName){
-            if(data_get($field, 'type') === 'pivot'){
+        return collect($fields)->map(function ($field, $fieldName) {
+            if (data_get($field, 'type') === 'pivot') {
                 return '';
             }
+
             return '\'' . $fieldName . '\' => data_get($data, \'' . $fieldName . '\') ?? $' . $this->modelVariable() .'->' . $fieldName . ',';
         })->join("\n");
     }
@@ -98,21 +100,22 @@ class RepositoryMakeCommand extends GeneratorCommand
         $fields = $this->getSchemaFields();
 
         return collect($fields)
-            ->filter(fn($field) => data_get($field, 'type') !== 'pivot')
+            ->filter(fn ($field) => data_get($field, 'type') !== 'pivot')
             ->keys()
             ->join('\', \'');
-
     }
 
     public function replaceManyToManySync()
     {
         $fields = $this->getSchemaFields();
+
         return collect($fields)
-            ->filter(function ($field){
+            ->filter(function ($field) {
                 return data_get($field, 'type') === 'pivot';
             })
-            ->map(function ($field, $fieldName){
+            ->map(function ($field, $fieldName) {
                 $foreignKey = Str::plural(data_get($field, 'pivot.foreign_key'));
+
                 return 'if(data_get($data, \'' . $foreignKey . '\')){' . "\n" .
                     '$' . $this->modelVariable() . '->' . $fieldName . '()->sync(data_get($data, \'' . $foreignKey . '\'));' . "\n" .
                     '}';
@@ -134,6 +137,7 @@ class RepositoryMakeCommand extends GeneratorCommand
         ];
 
         $replace = array_merge($replace, $this->buildModelReplacements($replace));
+
         return Fixer::format(str_replace(
             array_keys($replace),
             array_values($replace),

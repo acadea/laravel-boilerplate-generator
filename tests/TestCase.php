@@ -18,7 +18,6 @@ class TestCase extends Orchestra
         Factory::guessFactoryNamesUsing(
             fn (string $modelName) => 'Acadea\\Boilerplate\\Tests\\Database\\Factories\\'.class_basename($modelName).'Factory'
         );
-
     }
 
     protected function getPackageProviders($app)
