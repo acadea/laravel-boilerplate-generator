@@ -39,11 +39,13 @@ class {{ model }}Repository extends BaseRepository
     {
         return DB::transaction(function () use ($data) {
             ${{ modelVariable }} = parent::create([
-                'name'               => data_get($data, 'name'),
+                {{ createFields }}
             ]);
 
             /** @var {{ model }} ${{ modelVariable }} */
             if (${{ modelVariable }}) {
+
+                {{ manyToManySync }}
 
                 event(new {{ model }}Created(${{ modelVariable }}));
 
@@ -68,8 +70,11 @@ class {{ model }}Repository extends BaseRepository
         return DB::transaction(function () use (${{ modelVariable }}, $data) {
 
             if ($updated = ${{ modelVariable }}->update([
-                'name'               => data_get($data, 'name') ?? ${{ modelVariable }}->name,
+                {{ updateFields }}
             ])) {
+
+                {{ manyToManySync }}
+
                 event(new {{ model }}Updated(${{ modelVariable }}));
 
                 return ${{ modelVariable }};
