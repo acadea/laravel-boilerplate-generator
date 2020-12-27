@@ -11,6 +11,14 @@ use Illuminate\Support\Facades\File;
 
 class FactoryTest extends TestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->beforeApplicationDestroyed(function (){
+            File::delete($this->app->path('../database/factories/PostFactory.php'));
+        });
+    }
 
     public function test_factory_generated_is_the_same()
     {

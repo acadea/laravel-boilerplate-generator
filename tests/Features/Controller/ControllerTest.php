@@ -16,12 +16,16 @@ class ControllerTest extends TestCase
         // generate a test controller based on fake model
 
         Artisan::call('boilerplate:controller PostController --api --force');
+
+        $this->beforeApplicationDestroyed(function (){
+            File::delete($this->app->path('Http/Controllers/Api/V1/PostController.php'));
+        });
     }
 
     public function test_generated_controller_is_correct()
     {
         // get controller instance
-        $path = __DIR__ . '/../../../vendor/orchestra/testbench-core/laravel/app/Http/Controllers/Api/V1/PostController.php';
+        $path = $this->app->path('Http/Controllers/Api/V1/PostController.php');
         $file = File::get($path);
 
         $sourceOfTruth = File::get(self::TEST_ASSERT_FILES_PATH . '/PostController.php');

@@ -14,6 +14,10 @@ class ModelTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        $this->beforeApplicationDestroyed(function (){
+            File::delete($this->app->path('Models/Post.php'));
+        });
     }
 
 
