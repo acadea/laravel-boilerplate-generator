@@ -11,6 +11,80 @@ use League\Flysystem\FileNotFoundException;
 class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
 {
 
+    private function isPivot($name)
+    {
+        return substr(strtolower($name), 0, 6) === 'pivot:';
+
+    }
+    /**
+     * Get the migration stub file.
+     *
+     * @param  string|null  $table
+     * @param  bool  $create
+     * @return string
+     */
+    protected function getStub($table, $create)
+    {
+        $isPivot = $this->isPivot($table);
+
+        if (is_null($table)) {
+            $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.stub')
+                ? $customPath
+                : $this->stubPath().'/migration.stub';
+        } elseif ($create && !$isPivot) {
+            $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.create.stub')
+                ? $customPath
+                : $this->stubPath().'/migration.create.stub';
+        } elseif ($create && $isPivot){
+            $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.pivot.stub')
+                ? $customPath
+                : $this->stubPath().'/migration.pivot.stub';
+        } else {
+            $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.update.stub')
+                ? $customPath
+                : $this->stubPath().'/migration.update.stub';
+        }
+
+        return $this->files->get($stub);
+    }
+
+    /**
+     * Get the full path to the migration.
+     *
+     * @param  string  $name
+     * @param  string  $path
+     * @return string
+     */
+    protected function getPath($name, $path)
+    {
+        $name = $this->removePivotFromName($name);
+
+        return $path.'/'.$this->getDatePrefix().'_'.$name.'.php';
+    }
+
+    private function removePivotFromName(string $name)
+    {
+        // $name is something like: create_veges_table
+        $splitted = explode('_', $name);
+        $isPivot = $this->isPivot($splitted[1]);
+        if($isPivot){
+            $splitted[1] = substr($splitted[1], 6);
+            $name = implode('_', $splitted);
+        }
+        return $name;
+    }
+
+    /**
+     * Get the class name of a migration name.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getClassName($name)
+    {
+        return Str::studly($this->removePivotFromName($name));
+    }
+
     /**
      * Populate the place-holders in the migration stub.
      *
@@ -93,7 +167,17 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
             return $payload . ';';
         });
 
+        // filter all primary keys
+        $primaryKeys = collect($fields)->filter(function ($field){
+            return data_get($field, 'primary');
+        })->keys();
+
+        if( $primaryKeys->isNotEmpty()){
+            // get all with
+            $payload = '$table->primary([\'' . $primaryKeys->join('\', \'') . '\']);';
+            $strings = $strings->add($payload);
+        }
+
         return $strings->values()->join("\n");
-//        implode("\n", array_values($strings->toArray()));
     }
 }

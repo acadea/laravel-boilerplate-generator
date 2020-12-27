@@ -171,7 +171,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $table = Str::snake(Str::pluralStudly(class_basename($this->argument('name'))));
 
         if ($this->option('pivot')) {
-            $table = Str::singular($table);
+            $table = Str::singular($table) . '_pivot';
         }
 
         $this->call('boilerplate:migration', [

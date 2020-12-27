@@ -22,7 +22,7 @@ class BoilerplateInitCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'boilerplate:init';
+    protected $signature = 'boilerplate:init {--force}';
 
     /**
      * The console command description.
@@ -42,6 +42,13 @@ class BoilerplateInitCommand extends GeneratorCommand
     {
         $schemas = SchemaStructure::get();
 
+        $table = 'pivot:post_tag';
+
+        Artisan::call('boilerplate:migration', [
+            'name'     => "create_{$table}_pivot_table",
+            '--create' => $table,
+        ]);
+        return ;
         foreach ($schemas as $schema => $fields){
 
             if( substr(strtolower($schema),0, 6) === 'pivot:'){
@@ -58,13 +65,11 @@ class BoilerplateInitCommand extends GeneratorCommand
             Artisan::call('boilerplate:model', [
                 'name' => Str::studly($schema),
                 '--all' => true,
+                '--force' => $this->option('force'),
+                '--api' => true,
             ]);
 
-
         }
-
-
-
 
     }
 
