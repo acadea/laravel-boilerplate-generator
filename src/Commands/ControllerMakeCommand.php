@@ -51,6 +51,18 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         return $rootNamespace . '\Http\Controllers';
     }
 
+    /**
+     * Get the stub file for the generator.
+     *
+     * @return string
+     */
+    protected function getStub()
+    {
+        $stub = '/stubs/controller.api.stub';
+
+        return $this->resolveStubPath($stub);
+    }
+
 
     /**
      * Build the class with the given name.
