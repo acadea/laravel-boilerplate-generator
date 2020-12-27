@@ -27,6 +27,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     protected $description = 'Eloquent model class with loaded boilerplate.';
 
 
+
     /**
      * Location of the file
      * @param string $name
@@ -35,8 +36,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     public function getPath($name)
     {
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
-
-        return $this->laravel['path'] . '/' . str_replace('\\', '/', $name) . '.php';
+        return $this->laravel->basePath() . '/app/' . str_replace('\\', '/', $name) . '.php';
     }
 
 
