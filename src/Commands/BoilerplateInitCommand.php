@@ -5,6 +5,7 @@ namespace Acadea\Boilerplate\Commands;
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 
@@ -40,20 +41,21 @@ class BoilerplateInitCommand extends GeneratorCommand
     {
         $schemas = SchemaStructure::get();
 
-        $table = 'pivot:post_tag';
+//        $table = 'pivot:post_tag';
 
 //        Artisan::call('boilerplate:migration', [
 //            'name'     => "create_{$table}_pivot_table",
 //            '--create' => $table,
 //        ]);
 //        return ;
-        foreach ($schemas as $schema => $fields) {
+        foreach (Arr::only($schemas, ['pivot:order_size']) as $schema => $fields) {
             if (substr(strtolower($schema), 0, 6) === 'pivot:') {
 
-                //  only run migration
+                // only run migration if pivot
+                // pivot table will have 'pivot:' prefixed in front of table name
                 Artisan::call('boilerplate:migration', [
-                    'name' => "create_{$table}_pivot_table",
-                    '--create' => $table,
+                    'name' => "create_{$schema}_pivot_table",
+                    '--create' => $schema,
                 ]);
 
                 continue;

@@ -41,7 +41,6 @@ class BoilerplateInstallCommand extends GeneratorCommand
 //        // composer install packages
         $packages = [
             'spatie/laravel-query-builder',
-            'laravel/passport',
             'laravel/scout',
             'teamtnt/laravel-scout-tntsearch-driver',
             'spatie/laravel-permission',

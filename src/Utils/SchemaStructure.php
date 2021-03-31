@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\App;
 
 class SchemaStructure
 {
-    public static function get()
+    public static function get(): array
     {
         // get all fields defined in schema structure array
         $configExist = file_exists($customPath = App::basePath() . '/' . trim(config('boilerplate.paths.schema-structure'), '/'));
