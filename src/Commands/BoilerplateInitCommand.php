@@ -41,14 +41,7 @@ class BoilerplateInitCommand extends GeneratorCommand
     {
         $schemas = SchemaStructure::get();
 
-//        $table = 'pivot:post_tag';
-
-//        Artisan::call('boilerplate:migration', [
-//            'name'     => "create_{$table}_pivot_table",
-//            '--create' => $table,
-//        ]);
-//        return ;
-        foreach (Arr::only($schemas, ['pivot:order_size']) as $schema => $fields) {
+        foreach ($schemas as $schema => $fields) {
             if (substr(strtolower($schema), 0, 6) === 'pivot:') {
 
                 // only run migration if pivot
