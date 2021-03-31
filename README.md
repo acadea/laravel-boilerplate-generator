@@ -48,6 +48,7 @@ the `boilerplate.php` config file.
 Must follow convention
 Pivot: post_tag
 
+Model name must be singular 
 
 ```php
 
@@ -127,7 +128,7 @@ echo $skeleton->echoPhrase('Hello, Acadea!');
 
 ## Caveats
 
-1. `hasMany` Relationship is not loaded to the boilerplate
+
 
 ## Testing
 
