@@ -77,6 +77,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
         $this->files->put($path, Fixer::format($this->sortImports($content)));
 
+        dump("Created Model {$this->qualifyClass($this->getNameInput())}");
         $this->info($this->type . ' created successfully.');
     }
 
@@ -210,6 +211,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             'name' => "{$controller}Controller",
             '--model' => $this->option('resource') || $this->option('api') ? $modelName : null,
             '--api' => $this->option('api'),
+            '--force' => $this->option('force'),
         ]));
     }
 

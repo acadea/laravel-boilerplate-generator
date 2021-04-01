@@ -6,17 +6,11 @@ return [
     'post' => [
         'title' => [
             'type' => 'string',
-            'attributes' => ['nullable'],
         ],
         'body' => [
             'type' => 'mediumText',
-            'attributes' => ['nullable'],
-        ],
-        'user_id' => [
-            'type' => 'foreignId',
-            'foreign' => [
-                'references' => 'id',
-                'on' => 'users',
+            'attributes' => [
+                'nullable',
             ],
         ],
         'book_author_id' => [
@@ -26,23 +20,30 @@ return [
                 'on' => 'book_authors',
             ],
         ],
+        'price' => [
+            'type' => 'decimal'
+        ],
+        'published' => [
+            'type' => 'boolean',
+            'attributes' => [
+                'default' => [true],
+            ]
+        ],
         'tags' => [
             'type' => 'pivot',
             'pivot' => [
                 'table' => 'post_tag',
                 'related_key' => 'post_id',
                 'foreign_key' => 'tag_id',
-            ],
-        ],
-
+            ]
+        ]
     ],
-
     'pivot:post_tag' => [
         'post_id' => [
             'primary' => true,
             'type' => 'foreignId',
             'attributes' => [
-                'index',
+                'index'
             ],
             'foreign' => [
                 'references' => 'id',
@@ -53,14 +54,29 @@ return [
             'primary' => true,
             'type' => 'foreignId',
             'attributes' => [
-                'index',
+                'index'
             ],
             'foreign' => [
                 'references' => 'id',
                 'on' => 'tags',
             ],
         ],
-
     ],
 
+    'comment' => [
+        'title' => [
+            'type' => 'string',
+            'attributes' => ['nullable'],
+        ],
+        'post_id' => [
+            'type' => 'foreignId',
+            'foreign' => [
+                'references' => 'id',
+                'on' => 'posts',
+            ],
+        ],
+    ],
+
+
 ];
+

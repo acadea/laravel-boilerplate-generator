@@ -49,7 +49,7 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
      */
     public function handle()
     {
-        parent::handle();
+        return tap(parent::handle(), fn($result) => dump("Created Test {$this->qualifyClass($this->getNameInput())}"));
     }
 
     /**

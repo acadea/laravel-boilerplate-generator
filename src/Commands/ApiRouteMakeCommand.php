@@ -64,7 +64,8 @@ class ApiRouteMakeCommand extends GeneratorCommand
      */
     public function handle()
     {
-        parent::handle();
+        return tap(parent::handle(), fn($result) => dump("Created Route {$this->qualifyClass($this->getNameInput())}"));
+
     }
 
     public function buildClass($name)

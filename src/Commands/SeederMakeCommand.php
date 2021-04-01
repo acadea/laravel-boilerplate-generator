@@ -32,6 +32,12 @@ class SeederMakeCommand extends \Illuminate\Database\Console\Seeds\SeederMakeCom
      */
     protected $type = 'Seeder';
 
+    public function handle()
+    {
+        return tap(parent::handle(), fn($result) => dump("Created Seeder {$this->qualifyClass($this->getNameInput())}"));
+    }
+
+
     protected function buildClass($name)
     {
         $stub = $this->files->get($this->getStub());

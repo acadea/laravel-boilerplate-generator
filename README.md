@@ -84,6 +84,8 @@ return [
             'type' => 'pivot',
             'pivot' => [
                 'table' => 'post_tag',
+                'related_key' => 'post_id',
+                'foreign_key' => 'tag_id',
 
             ]
         ]

@@ -10,7 +10,6 @@ use App\Models\Post;
 use App\Repositories\BaseRepository;
 use Illuminate\Support\Facades\DB;
 
-
 class PostRepository extends BaseRepository
 {
     protected $allowedFilters;
@@ -19,7 +18,7 @@ class PostRepository extends BaseRepository
     {
         parent::__construct();
         $this->allowedFilters = [
-            'title', 'body', 'user_id', 'book_author_id'
+            'title', 'body', 'book_author_id', 'price', 'published',
         ];
     }
 
@@ -39,16 +38,16 @@ class PostRepository extends BaseRepository
     {
         return DB::transaction(function () use ($data) {
             $post = parent::create([
-                'title'          => data_get($data, 'title'),
-                'body'           => data_get($data, 'body'),
-                'user_id'        => data_get($data, 'user_id'),
+                'title' => data_get($data, 'title'),
+                'body' => data_get($data, 'body'),
                 'book_author_id' => data_get($data, 'book_author_id'),
+                'price' => data_get($data, 'price'),
+                'published' => data_get($data, 'published'),
 
             ]);
 
             /** @var Post $post */
             if ($post) {
-
                 if (data_get($data, 'tag_ids')) {
                     $post->tags()->sync(data_get($data, 'tag_ids'));
                 }
@@ -74,15 +73,14 @@ class PostRepository extends BaseRepository
     public function update($post, array $data): Post
     {
         return DB::transaction(function () use ($post, $data) {
-
             if ($updated = $post->update([
-                'title'          => data_get($data, 'title') ?? $post->title,
-                'body'           => data_get($data, 'body') ?? $post->body,
-                'user_id'        => data_get($data, 'user_id') ?? $post->user_id,
+                'title' => data_get($data, 'title') ?? $post->title,
+                'body' => data_get($data, 'body') ?? $post->body,
                 'book_author_id' => data_get($data, 'book_author_id') ?? $post->book_author_id,
+                'price' => data_get($data, 'price') ?? $post->price,
+                'published' => data_get($data, 'published') ?? $post->published,
 
             ])) {
-
                 if (data_get($data, 'tag_ids')) {
                     $post->tags()->sync(data_get($data, 'tag_ids'));
                 }

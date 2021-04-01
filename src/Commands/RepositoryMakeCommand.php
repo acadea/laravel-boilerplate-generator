@@ -22,7 +22,7 @@ class RepositoryMakeCommand extends GeneratorCommand
     {
         return file_exists($customPath = $this->laravel->basePath(trim('/stubs/repository.stub', '/')))
             ? $customPath
-            : __DIR__. '/..' . '/stubs/repository.stub';
+            : __DIR__. '/../stubs/repository.stub';
     }
 
     /**
@@ -48,7 +48,7 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     public function handle()
     {
-        return parent::handle();
+        return tap(parent::handle(), fn($result) => dump("Created Repository {$this->qualifyClass($this->getNameInput())}"));
     }
 
     /**

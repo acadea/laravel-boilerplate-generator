@@ -63,6 +63,11 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         return $this->resolveStubPath($stub);
     }
 
+    public function handle()
+    {
+        return tap(parent::handle(), fn($result) => dump("Created Controller {$this->qualifyClass($this->getNameInput())}"));
+    }
+
 
     /**
      * Build the class with the given name.
@@ -187,15 +192,15 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
             case 'foreignId':
                 return 1;
             case 'boolean':
-                return Arr::random([true, false]);
+                return true;
             case 'string':
-                return $faker->realText(20);
+                return $faker->text(20);
             case 'date':
                 return $faker->date();
             case 'float':
                 return $faker->randomNumber(3);
             case 'text':
-                return $faker->realText(80);
+                return $faker->text(80);
             case 'timestamp':
                 return $faker->unixTime();
             case 'ipAddress':

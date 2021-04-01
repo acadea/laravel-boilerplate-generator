@@ -7,7 +7,6 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Repositories\Api\V1\PostRepository;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -38,8 +37,8 @@ class PostController extends Controller
 
         $posts = $repository->buildQuery()->with(self::RELATIONSHIPS);
 
-        if($search = $request->search){
-            $posts = $repository->search($search)->query(function (Builder $builder) use($posts){
+        if ($search = $request->search) {
+            $posts = $repository->search($search)->query(function (Builder $builder) use ($posts) {
                 $builder->with(self::RELATIONSHIPS);
                 $builder->whereIn('id', $posts->get()->pluck('id'));
             });
@@ -50,10 +49,11 @@ class PostController extends Controller
 
     /**
      * Store a newly created Post in storage.
-     * @bodyParam title required string Post title. Example: Alice said very.
-     * @bodyParam body required mediumText Post body. Example: Alice said very humbly; 'I won't have any rules in particular; at least, if.
-     * @bodyParam user_id required foreignId Post user id. Example: 1
+     * @bodyParam title required string Post title. Example: Culpa consequatur.
+     * @bodyParam body required mediumText Post body. Example: Consequatur quisquam recusandae asperiores accusamus nihil repellat.
      * @bodyParam book_author_id required foreignId Post book author id. Example: 1
+     * @bodyParam price required decimal Post price. Example: 579
+     * @bodyParam published required boolean Post published. Example: 1
      * @bodyParam tags required pivot Post tags. Example: [1, 2]
      * @apiResource App\Http\Resources\PostResource
      * @apiResourceModel App\Models\Post
@@ -63,6 +63,7 @@ class PostController extends Controller
     public function store(Request $request, PostRepository $repository)
     {
         $created = $repository->create($request->toArray());
+
         return (new PostResource($created))->response();
     }
 
@@ -82,10 +83,11 @@ class PostController extends Controller
 
     /**
      * Update the specified Post in storage.
-     * @bodyParam title required string Post title. Example: Alice said very.
-     * @bodyParam body required mediumText Post body. Example: Alice said very humbly; 'I won't have any rules in particular; at least, if.
-     * @bodyParam user_id required foreignId Post user id. Example: 1
+     * @bodyParam title required string Post title. Example: Culpa consequatur.
+     * @bodyParam body required mediumText Post body. Example: Consequatur quisquam recusandae asperiores accusamus nihil repellat.
      * @bodyParam book_author_id required foreignId Post book author id. Example: 1
+     * @bodyParam price required decimal Post price. Example: 579
+     * @bodyParam published required boolean Post published. Example: 1
      * @bodyParam tags required pivot Post tags. Example: [1, 2]
      * @urlParam Post required Post ID
      * @apiResource App\Http\Resources\PostResource
@@ -97,6 +99,7 @@ class PostController extends Controller
     public function update(Request $request, Post $post, PostRepository $repository)
     {
         $updated = $repository->update($post, $request->toArray());
+
         return (new PostResource($updated))->response();
     }
 

@@ -13,7 +13,7 @@ class Post extends Model
     protected $fillable = ['title', 'body', 'user_id', 'book_author_id', 'tags'];
 
     protected $casts = [
-
+        'options' => 'array'
     ];
 
     public function user()
@@ -29,6 +29,11 @@ class Post extends Model
     public function posts()
     {
         return $this->belongsToMany(\App\Models\Post::class, 'post_tag', 'tag_id', 'post_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(\App\Models\Comment::class, 'post_id');
     }
 
 }

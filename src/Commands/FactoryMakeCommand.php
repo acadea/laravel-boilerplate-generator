@@ -35,6 +35,11 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
      */
     protected $type = 'Factory';
 
+    public function handle()
+    {
+        return tap(parent::handle(), fn($result) => dump("Created Factory {$this->qualifyClass($this->getNameInput())}"));
+    }
+
 
     protected function getModelName()
     {
