@@ -160,6 +160,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $this->call('boilerplate:factory', [
             'name' => "{$factory}Factory",
             '--model' => $this->qualifyClass($this->getNameInput()),
+            '--force' => $this->option('force'),
         ]);
     }
 

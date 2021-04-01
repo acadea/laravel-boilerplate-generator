@@ -221,6 +221,7 @@ class RepositoryMakeCommand extends GeneratorCommand
     {
         return [
             ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this repository is based on.'],
+            ['force', 'f', InputOption::VALUE_OPTIONAL, 'Force to regenerate boilerplate.'],
         ];
     }
 }

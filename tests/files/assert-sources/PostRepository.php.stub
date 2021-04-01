@@ -18,7 +18,7 @@ class PostRepository extends BaseRepository
     {
         parent::__construct();
         $this->allowedFilters = [
-            'title', 'body', 'book_author_id', 'price', 'published',
+            'title', 'body', 'options', 'book_author_id', 'price', 'published',
         ];
     }
 
@@ -40,6 +40,7 @@ class PostRepository extends BaseRepository
             $post = parent::create([
                 'title' => data_get($data, 'title'),
                 'body' => data_get($data, 'body'),
+                'options' => data_get($data, 'options'),
                 'book_author_id' => data_get($data, 'book_author_id'),
                 'price' => data_get($data, 'price'),
                 'published' => data_get($data, 'published'),
@@ -76,6 +77,7 @@ class PostRepository extends BaseRepository
             if ($updated = $post->update([
                 'title' => data_get($data, 'title') ?? $post->title,
                 'body' => data_get($data, 'body') ?? $post->body,
+                'options' => data_get($data, 'options') ?? $post->options,
                 'book_author_id' => data_get($data, 'book_author_id') ?? $post->book_author_id,
                 'price' => data_get($data, 'price') ?? $post->price,
                 'published' => data_get($data, 'published') ?? $post->published,

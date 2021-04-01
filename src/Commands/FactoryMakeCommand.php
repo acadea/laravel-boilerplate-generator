@@ -14,6 +14,7 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
     use ParseModel,
         ResolveStubPath;
 
+
     /**
      * The console command name.
      *
@@ -146,6 +147,7 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
     {
         return [
             ['model', 'm', InputOption::VALUE_OPTIONAL, 'The name of the model'],
+            ['force', 'f', InputOption::VALUE_OPTIONAL, 'force to generate'],
         ];
     }
 }
