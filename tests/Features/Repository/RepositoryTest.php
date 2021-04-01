@@ -24,7 +24,7 @@ class RepositoryTest extends TestCase
         ]);
 
         $this->beforeApplicationDestroyed(function () {
-            File::delete($this->app->path('Repository/Api/V1/PostRepository.php'));
+            File::delete($this->app->path('Repositories/Api/V1/PostRepository.php'));
         });
     }
 
