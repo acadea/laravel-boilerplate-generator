@@ -7,6 +7,7 @@ use Acadea\Boilerplate\Utils\SchemaStructure;
 use Acadea\Fixer\Facade\Fixer;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\InputOption;
 
 class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 {
@@ -92,34 +93,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             return;
         }
 
-        if ($this->option('all')) {
-            $name = Str::studly(class_basename($this->argument('name')));
-
-            // create resource class
-            $this->call('make:resource', [
-                'name' => $name . 'Resource',
-            ]);
-
-
-            // generate event classes if passed --event flag
-            $eventClasses = ['Created', 'PermanentlyDeleted', 'Updated', 'Restored', 'Deleted'];
-            collect($eventClasses)->each(function ($class) use ($name) {
-                Artisan::call('boilerplate:api-event', [
-                    'name' => $name . $class,
-                    '--model' => $name,
-                ]);
-            });
-
-            // create repo
-            $this->call('boilerplate:repository', [
-                'name' => $name . 'Repository',
-            ]);
-
-            // create routes
-            $this->call('boilerplate:route', [
-                'name' => $name,
-            ]);
-        }
+        $name = Str::studly(class_basename($this->argument('name')));
 
         if ($this->option('all')) {
             $this->input->setOption('factory', true);
@@ -127,6 +101,45 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             $this->input->setOption('migration', true);
             $this->input->setOption('controller', true);
             $this->input->setOption('resource', true);
+            $this->input->setOption('api-events', true);
+            $this->input->setOption('repository', true);
+            $this->input->setOption('route', true);
+            $this->input->setOption('test', true);
+        }
+
+        if($this->option('resource')){
+            // create resource class
+            $this->call('make:resource', [
+                'name' => $name . 'Resource',
+            ]);
+        }
+
+        if($this->option('api-events')){
+            // generate event classes if passed --api-event flag
+            $eventClasses = ['Created', 'PermanentlyDeleted', 'Updated', 'Restored', 'Deleted'];
+            collect($eventClasses)->each(function ($class) use ($name) {
+                Artisan::call('boilerplate:api-event', [
+                    'name' => $name . $class,
+                    '--model' => $name,
+                    '--force' => $this->option('force'),
+                ]);
+            });
+        }
+
+        if ($this->option('repository')){
+            // create repo
+            $this->call('boilerplate:repository', [
+                'name' => $name . 'Repository',
+                '--force' => $this->option('force'),
+            ]);
+        }
+
+        if($this->option('route')){
+            // create routes
+            $this->call('boilerplate:route', [
+                'name' => $name,
+                '--force' => $this->option('force'),
+            ]);
         }
 
         if ($this->option('factory')) {
@@ -145,6 +158,13 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             $this->createController();
 
             // create requests files
+        }
+
+        if($this->option('test')){
+            $this->call('boilerplate:test', [
+                'name' => "{$name}ApiTest",
+                '--force' => $this->option('force'),
+            ]);
         }
     }
 
@@ -264,5 +284,24 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         });
 
         return str_replace(['{{ casts }}', '{{casts}}'], $fields->join(','), $stub);
+    }
+
+    protected function getOptions()
+    {
+        return [
+            ['all', 'a', InputOption::VALUE_NONE, 'Generate a migration, seeder, factory, and resource controller for the model'],
+            ['controller', 'c', InputOption::VALUE_NONE, 'Create a new controller for the model'],
+            ['factory', 'f', InputOption::VALUE_NONE, 'Create a new factory for the model'],
+            ['force', null, InputOption::VALUE_NONE, 'Create the class even if the model already exists'],
+            ['migration', 'm', InputOption::VALUE_NONE, 'Create a new migration file for the model'],
+            ['seed', 's', InputOption::VALUE_NONE, 'Create a new seeder file for the model'],
+            ['pivot', 'p', InputOption::VALUE_NONE, 'Indicates if the generated model should be a custom intermediate table model'],
+            ['resource', 'r', InputOption::VALUE_NONE, 'Indicates if the generated controller should be a resource controller'],
+            ['api', null, InputOption::VALUE_NONE, 'Indicates if the generated controller should be an API controller'],
+            ['api-events', null, InputOption::VALUE_NONE, 'Create events for the generated model'],
+            ['route', null, InputOption::VALUE_NONE, 'Create a route file for the generated model'],
+            ['repository', null, InputOption::VALUE_NONE, 'Create repository for the generated model'],
+            ['test', null, InputOption::VALUE_NONE, 'Create feature tests for the controller'],
+        ];
     }
 }

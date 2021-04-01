@@ -5,6 +5,7 @@ namespace Acadea\Boilerplate\Commands;
 use Acadea\Boilerplate\Utils\Composer;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Facades\Artisan;
 
 class BoilerplateInstallCommand extends GeneratorCommand
 {
@@ -47,11 +48,11 @@ class BoilerplateInstallCommand extends GeneratorCommand
         ];
 //
         dump('Installing composer packages..');
-        $this->laravel->make(Composer::class)->run(['require', collect($packages)->join(' ')]);
+        $this->laravel->make(Composer::class)->run(['require', ...$packages]);
 
-        collect($packages)->each(function ($package) {
-            $this->laravel->make(Composer::class)->run(['require', $package]);
-        });
+//        collect($packages)->each(function ($package) {
+//            $this->laravel->make(Composer::class)->run(['require', $package]);
+//        });
 
         // composer install
 
@@ -63,16 +64,27 @@ class BoilerplateInstallCommand extends GeneratorCommand
             '/stubs/preload/trait.disable-foreign-keys.stub' => '/database/seeders/Traits/DisableForeignKeys.php',
             '/stubs/preload/trait.truncate-table.stub' => '/database/seeders/Traits/TruncateTable.php',
             '/stubs/preload/factory.helpers.stub' => '/database/factories/helpers/FactoryHelper.php',
+            '/stubs/preload/factory.user.stub' => '/database/factories/UserFactory.php',
+            '/stubs/preload/factory.role.stub' => '/database/factories/RoleFactory.php',
+            '/stubs/preload/factory.permission.stub' => '/database/factories/PermissionFactory.php',
             '/stubs/preload/test.api-test-case.stub' => '/tests/ApiTestCase.php',
-        // traits
-
-
+            '/stubs/preload/test.test-case.stub' => '/tests/TestCase.php',
+            '/stubs/preload/model.role.stub' => '/app/Models/Role.php',
+            '/stubs/preload/model.permission.stub' => '/app/Models/Permission.php',
 
         ];
 
         collect($stubs)->each(function ($dest, $source) {
             $this->publishStub($source, $dest);
         });
+
+        dump('publishing laravel permission migration files and config');
+        Artisan::call('vendor:publish', [
+            '--provider' => "Spatie\Permission\PermissionServiceProvider",
+        ]);
+
+        dump('running migration fresh');
+        Artisan::call('migrate:fresh');
     }
 
     public function publishStub($source, $dest)

@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Api\V1\{{ model }};
 
-use App\Events\Api\{{ model }}\{{ model }}Created;
-use App\Events\Api\{{ model }}\{{ model }}PermanentlyDeleted;
-use App\Events\Api\{{ model }}\{{ model }}Updated;
+use App\Events\Models\{{ model }}\{{ model }}Created;
+use App\Events\Models\{{ model }}\{{ model }}PermanentlyDeleted;
+use App\Events\Models\{{ model }}\{{ model }}Updated;
 use App\Models\{{ model }};
 use App\Repositories\Api\V1\{{ model }}Repository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -41,10 +41,9 @@ class {{ model }}ApiTest extends ApiTestCase
 
         $response->assertStatus(200);
 
-
         /* test sort */
         $repo = new {{ model }}Repository;
-        $sortableFields = $repo->allowedSorts;
+        $sortableFields = $repo->getAllowedSorts();
 
         if(!empty($sortableFields)){
             collect($sortableFields)->each(function ($sortable){
@@ -61,13 +60,10 @@ class {{ model }}ApiTest extends ApiTestCase
                     return $current;
                 });
             });
-
         }
 
-
         /* test filter*/
-
-        $filterables = $repo->allowedFilters;
+        $filterables = $repo->getAllowedFilters();
 
         if(!empty($filterables)){
             collect($filterables)->each(function ($filterable) use($dummy){
@@ -126,7 +122,6 @@ class {{ model }}ApiTest extends ApiTestCase
         $result = $response->assertStatus(200)->json('data');
 
         $this->assertEquals(data_get($result, 'id'), $dummy->id);
-
     }
 
     public function test_create()
