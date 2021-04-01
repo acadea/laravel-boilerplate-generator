@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\File;
 
 class RepositoryTest extends TestCase
 {
+    protected $mockFilePath = 'Repositories/Api/V1/PostRepository.php';
+
     // test controller generated is ok
     public function setUp(): void
     {
@@ -24,13 +26,14 @@ class RepositoryTest extends TestCase
         ]);
 
         $this->beforeApplicationDestroyed(function () {
-            File::delete($this->app->path('Repositories/Api/V1/PostRepository.php'));
+            File::delete($this->app->path('Models/Post.php'));
+            File::delete($this->app->path($this->mockFilePath));
         });
     }
 
     public function test_generated_repository_is_correct()
     {
-        $path = $this->app->path('Repositories/Api/V1/PostRepository.php');
+        $path = $this->app->path($this->mockFilePath);
         $file = File::get($path);
 
         $sourceOfTruth = File::get(self::TEST_ASSERT_FILES_PATH . '/PostRepository.php.stub');
