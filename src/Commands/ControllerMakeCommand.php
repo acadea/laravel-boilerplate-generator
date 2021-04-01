@@ -206,7 +206,7 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
             case 'ipAddress':
                 return $faker->ipv4;
             case 'json':
-                return $faker->words(3);
+                return json_encode($faker->words(3));
             case 'macAddress':
                 return $faker->macAddress;
             case 'uuid':

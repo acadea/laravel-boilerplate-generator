@@ -17,6 +17,7 @@ class CreatePostsTable extends Migration
             $table->id();
             $table->string('title');
             $table->mediumText('body')->nullable();
+            $table->json('options')->nullable();
             $table->foreignId('book_author_id');
             $table->foreign('book_author_id')->on('book_authors')->references('id')->cascadeOnDelete();
             $table->decimal('price');

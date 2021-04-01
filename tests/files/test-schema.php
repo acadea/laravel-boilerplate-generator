@@ -13,6 +13,12 @@ return [
                 'nullable',
             ],
         ],
+        'options'        => [
+            'type'       => 'json',
+            'attributes' => [
+                'nullable'
+            ],
+        ],
         'book_author_id' => [
             'type' => 'foreignId',
             'foreign' => [

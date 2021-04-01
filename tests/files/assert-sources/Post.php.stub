@@ -5,35 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
 class Post extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'body', 'user_id', 'book_author_id', 'tags'];
+    protected $fillable = [ 'title','body','options','book_author_id','price','published','tags' ];
 
     protected $casts = [
-        'options' => 'array'
+        'options' => 'array',
     ];
 
-    public function user()
+    public function comments()
     {
-        return $this->belongsTo(\App\Models\User::class, 'user_id');
+        return $this->hasMany(\App\Models\Comment::class, 'comment');
     }
-
     public function book_author()
     {
         return $this->belongsTo(\App\Models\BookAuthor::class, 'book_author_id');
     }
-
     public function posts()
     {
         return $this->belongsToMany(\App\Models\Post::class, 'post_tag', 'tag_id', 'post_id');
     }
-
-    public function comments()
-    {
-        return $this->hasMany(\App\Models\Comment::class, 'post_id');
-    }
-
 }

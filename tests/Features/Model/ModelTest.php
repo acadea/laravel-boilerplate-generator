@@ -28,7 +28,6 @@ class ModelTest extends TestCase
         ]);
 
         $generated = File::get($this->app->path('Models/Post.php'));
-
         $generated = StringHelper::clean($generated);
 
         $sourceOfTruth = File::get(self::TEST_ASSERT_FILES_PATH . '/Post.php.stub');
