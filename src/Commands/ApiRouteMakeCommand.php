@@ -144,6 +144,7 @@ class ApiRouteMakeCommand extends GeneratorCommand
     {
         return [
             ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this route is based on.'],
+            ['force', 'f', InputOption::VALUE_OPTIONAL, 'Force to regenerate boilerplate.'],
         ];
     }
 }
