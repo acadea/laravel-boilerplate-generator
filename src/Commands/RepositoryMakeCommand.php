@@ -166,7 +166,7 @@ class RepositoryMakeCommand extends GeneratorCommand
             // get model from name
             $name = $this->getNameInput();
 
-            throw_if(substr($name, -10) !== 'Repository', InvalidArgumentException::class, "Name should follow the convention: {model}Repository");
+            throw_if(substr($name, -10) !== 'Repository', InvalidArgumentException::class, "Name should follow the convention: {model}Repository, Got: {$name}");
 
             return str_replace('Repository', "", $name);
         }

@@ -83,7 +83,7 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
             // get model from name
             $name = $this->getNameInput();
             ;
-            throw_if(substr($name, -7) !== 'ApiTest', InvalidArgumentException::class, "Name should follow the convention: {model}ApiTest");
+            throw_if(substr($name, -7) !== 'ApiTest', InvalidArgumentException::class, "Name should follow the convention: {model}ApiTest, got: {$name}");
 
             return str_replace('ApiTest', "", $name);
         }
