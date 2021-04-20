@@ -16,7 +16,7 @@ class DataType
         $timestamps = [ 'nullableTimestamps', 'time', 'timeTz', 'timestamp', 'timestampTz'];
         $floats = ['decimal', 'double', 'float', 'unsignedDecimal'];
         $paragraphs = ['longText', 'mediumText', 'text'];
-        $intArrays = ['pivot'];
+        $intArrays = [];
 
         if (collect($integers)->contains($dataType)) {
             return 'integer';

@@ -96,9 +96,11 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
         $fields = data_get($structure, strtolower($model));
 
         // generate faker
-        return collect($fields)->map(function ($field, $name) {
-            return "'{$name}' => " . $this->generateFakerField(data_get($field, 'type'), $name) . ',';
-        })->join("\n");
+        return collect($fields)
+            ->filter(fn ($field) => data_get($field, 'type') !== 'pivot')
+            ->map(function ($field, $name) {
+                return "'{$name}' => " . $this->generateFakerField(data_get($field, 'type'), $name) . ',';
+            })->join("\n");
     }
 
     protected function generateFakerField($dataType, $fieldName)

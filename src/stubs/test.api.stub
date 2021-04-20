@@ -83,7 +83,7 @@ class {{ model }}ApiTest extends ApiTestCase
                 $results = $response->assertStatus(200)->json('data');
 
                 collect($results)->each(function ($result)use($filterable, $dummyValue){
-                    $this->assertTrue(data_get($result, $filterable) === $dummyValue );
+                    $this->assertEquals(data_get($result, $filterable), $dummyValue, 'Filtered not the same.' );
                 });
 
 
