@@ -2,8 +2,8 @@
 
 use App\Http\Controllers\Api\V1\{{ model }}Controller;
 
-Route::get('{{ modelVariable }}s', [{{ model }}Controller::class, 'index']);
-Route::post('{{ modelVariable }}s', [{{ model }}Controller::class, 'store']);
-Route::get('{{ modelVariable }}s/{{{ modelVariable }}}', [{{ model }}Controller::class, 'show']);
-Route::patch('{{ modelVariable }}s/{{{ modelVariable }}}', [{{ model }}Controller::class, 'update']);
-Route::delete('{{ modelVariable }}s/{{{ modelVariable }}}', [{{ model }}Controller::class, 'destroy']);
+Route::get('{{ modelKebabPlural }}', [{{ model }}Controller::class, 'index']);
+Route::post('{{ modelKebabPlural }}', [{{ model }}Controller::class, 'store']);
+Route::get('{{ modelKebabPlural }}/{{{ modelVariable }}}', [{{ model }}Controller::class, 'show']);
+Route::patch('{{ modelKebabPlural }}/{{{ modelVariable }}}', [{{ model }}Controller::class, 'update']);
+Route::delete('{{ modelKebabPlural }}/{{{ modelVariable }}}', [{{ model }}Controller::class, 'destroy']);

@@ -122,6 +122,9 @@ class ApiRouteMakeCommand extends GeneratorCommand
             throw new ModelNotFoundException('Model does not exist. Namespace: ' . $modelClass);
         }
 
+        // needs to be kebab cased
+        $modelKebabPlural = strtolower(Str::kebab(Str::camel(Str::plural(class_basename($modelClass)))));
+
         return array_merge($replace, [
             'DummyFullModelClass' => $modelClass,
             '{{ namespacedModel }}' => $modelClass,
@@ -132,6 +135,8 @@ class ApiRouteMakeCommand extends GeneratorCommand
             'DummyModelVariable' => lcfirst(class_basename($modelClass)),
             '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
             '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
+            '{{modelKebabPlural}}' => $modelKebabPlural,
+            '{{ modelKebabPlural }}' => $modelKebabPlural,
         ]);
     }
 
