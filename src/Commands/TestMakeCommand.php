@@ -31,7 +31,7 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
      *
      * @var string
      */
-    protected $signature = 'boilerplate:test {name} {--model= : The model that this repo based on.}';
+    protected $signature = 'boilerplate:test {name} {--model= : The model that this repo based on.} {--force= : Force to regenerate test file}';
 
     /**
      * The console command description.
@@ -134,6 +134,7 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
     {
         return [
             ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this repository is based on.'],
+            ['force', 'f', InputOption::VALUE_OPTIONAL, 'Force to regenerate test file.'],
         ];
     }
 

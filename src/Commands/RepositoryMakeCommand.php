@@ -30,7 +30,7 @@ class RepositoryMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'boilerplate:repository {name} {--model= : The model that this repo based on.}';
+    protected $signature = 'boilerplate:repository {name} {--model= : The model that this repo based on.} {--force= : Force to recreate repository}';
 
     /**
      * The console command description.

@@ -118,6 +118,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             // generate event classes if passed --api-event flag
             $eventClasses = ['Created', 'PermanentlyDeleted', 'Updated', 'Restored', 'Deleted'];
             collect($eventClasses)->each(function ($class) use ($name) {
+                dump("Creating API event class: {$name}{$class}");
                 Artisan::call('boilerplate:api-event', [
                     'name' => $name . $class,
                     '--model' => $name,
@@ -252,7 +253,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
     protected function getModelFields($modelName)
     {
-        return data_get(SchemaStructure::get(), strtolower(Str::singular($modelName)));
+        return data_get(SchemaStructure::get(), strtolower(Str::snake(Str::camel(Str::singular($modelName)))));
     }
 
     protected function replaceFillables($stub, $name)

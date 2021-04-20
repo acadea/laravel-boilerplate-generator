@@ -46,7 +46,7 @@ class ApiRouteMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'boilerplate:route {name} {--model= : The model that this repo based on.}';
+    protected $signature = 'boilerplate:route {name} {--model= : The model that this repo based on.} {--force= : Force to regenerate api route file}';
 
     /**
      * The console command description.

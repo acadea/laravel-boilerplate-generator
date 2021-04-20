@@ -127,20 +127,20 @@ class {{ model }}ApiTest extends ApiTestCase
     public function test_create()
     {
         Event::fake();
-//        $fillables = collect((new {{ model }})->getFillable());
 
-//        $toFill = $fillables->random();
-//
         $dummy = {{ model }}::factory()->make();
-
 
         $response = $this->json('post', $this->uri, $dummy->toArray());
 
-//        $response->dump();
         $result = $response->assertStatus(201)->json('data');
 
         Event::assertDispatched({{ model }}Created::class);
 
+        $result = collect($result);
+
+        collect($result)->each(function ($value, $field) use($dummy) {
+            $this->assertSame(data_get($dummy, $field), $value, 'Fillable is not same.');
+        });
 //        $this->assertTrue(data_get($result, $toFill) === data_get($dummy, $toFill));
     }
 

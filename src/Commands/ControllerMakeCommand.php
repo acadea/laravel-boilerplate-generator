@@ -10,6 +10,7 @@ use Acadea\Fixer\Facade\Fixer;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCommand
 {
@@ -137,6 +138,8 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
     protected function getDbStructure()
     {
         $model = $this->getModelName();
+
+        $model = Str::snake(Str::camel(Str::singular($model)));
 
         // To read the file where the schema structure is defined.
         $fields = data_get(SchemaStructure::get(), $model);

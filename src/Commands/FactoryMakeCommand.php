@@ -105,7 +105,7 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
         $model = ucfirst($this->getModelName());
         switch (DataType::standardise($dataType)) {
             case 'foreignId':
-                return '\Database\Factories\Helpers\getRandomModelId(\App\Models\\' . $model . '::class)';
+                return '\Database\Factories\Helpers\FactoryHelper::getRandomModelId(\App\Models\\' . $model . '::class)';
             case 'intArrays':
                 return '[]';
             case 'integer':

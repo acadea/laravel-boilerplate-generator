@@ -29,7 +29,7 @@ class ApiEventMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'boilerplate:api-event {name} {--model= : The model that this event based on.}';
+    protected $signature = 'boilerplate:api-event {name} {--model= : The model that this event based on.} {--force= : Force to create the class even if exists}';
 
     /**
      * The console command description.
@@ -139,6 +139,8 @@ class ApiEventMakeCommand extends GeneratorCommand
     {
         return [
             ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this repository is based on.'],
+            ['force', null, InputOption::VALUE_NONE, 'Create the class even if the event already exists'],
+
         ];
     }
 }
