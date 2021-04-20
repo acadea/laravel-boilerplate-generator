@@ -7,6 +7,7 @@ use Acadea\Boilerplate\Commands\Traits\ResolveStubPath;
 use Acadea\Boilerplate\Utils\DataType;
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Acadea\Fixer\Facade\Fixer;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
 
 class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryMakeCommand
@@ -89,7 +90,7 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
         $structure = SchemaStructure::get();
 
         // get model name
-        $model = $this->getModelName();
+        $model = Str::snake(Str::camel(Str::singular($this->getModelName())));
 
         // find the fields from structure
         $fields = data_get($structure, strtolower($model));
