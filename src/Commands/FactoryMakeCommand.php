@@ -97,15 +97,17 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
 
         // generate faker
         return collect($fields)->map(function ($field, $name) {
-            return "'{$name}' => " . $this->generateFakerField(data_get($field, 'type')) . ',';
+            return "'{$name}' => " . $this->generateFakerField(data_get($field, 'type'), $name) . ',';
         })->join("\n");
     }
 
-    protected function generateFakerField($dataType)
+    protected function generateFakerField($dataType, $fieldName)
     {
-        $model = ucfirst($this->getModelName());
+        // field name is something like 'name' or 'post_id'
         switch (DataType::standardise($dataType)) {
             case 'foreignId':
+                $model = substr($fieldName, 0, -3);
+                $model = Str::studly(Str::camel($model));
                 return '\Database\Factories\Helpers\FactoryHelper::getRandomModelId(\App\Models\\' . $model . '::class)';
             case 'intArrays':
                 return '[]';

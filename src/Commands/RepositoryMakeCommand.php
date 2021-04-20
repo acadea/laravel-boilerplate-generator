@@ -66,7 +66,7 @@ class RepositoryMakeCommand extends GeneratorCommand
     {
         $structure = SchemaStructure::get();
 
-        return data_get($structure, strtolower(Str::singular($this->modelVariable())));
+        return data_get($structure, strtolower(Str::snake(Str::camel(Str::singular($this->modelVariable())))));
     }
 
     public function replaceCreateFields()

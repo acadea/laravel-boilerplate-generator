@@ -1,3 +1,4 @@
+
 # Laravel Boilerplate Generator
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/acadea/laravel-boilerplate-generator.svg?style=flat-square)](https://packagist.org/packages/acadea/laravel-boilerplate-generator)
@@ -48,7 +49,7 @@ the `boilerplate.php` config file.
 Must follow convention
 Pivot: post_tag
 
-Model name must be singular 
+Model name must be singular and snake-cased
 
 ```php
 
@@ -122,11 +123,23 @@ return [
     ],
 ];
 ```
+### API routes
+This package will bootstrap all the boilerplate routes for you.
 
-``` php
-$skeleton = new Acadea\Boilerplate();
-echo $skeleton->echoPhrase('Hello, Acadea!');
+However, you will need to include the following code in `api.php` for the boilerplate to work correctly.
+
+```php
+Route::group([
+    'namespace' => 'Api',
+    'as' => 'api.',
+    'middleware' => [
+        'auth:sanctum',
+    ],
+], function () {
+    require __DIR__ . '/api/v1.php';
+});
 ```
+Alternatively, you can run the `boilerplate:install` command, this package will overwrite the `api.php` file for you. 
 
 ## Caveats
 

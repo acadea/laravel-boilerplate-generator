@@ -136,12 +136,11 @@ class {{ model }}ApiTest extends ApiTestCase
 
         Event::assertDispatched({{ model }}Created::class);
 
-        $result = collect($result);
+        $result = collect($result)->only(array_keys($dummy->getAttributes()));
 
-        collect($result)->each(function ($value, $field) use($dummy) {
+        $result->each(function ($value, $field) use($dummy) {
             $this->assertSame(data_get($dummy, $field), $value, 'Fillable is not same.');
         });
-//        $this->assertTrue(data_get($result, $toFill) === data_get($dummy, $toFill));
     }
 
 
