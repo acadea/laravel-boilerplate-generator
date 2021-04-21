@@ -1,0 +1,109 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ rootNamespace }}Models\{{ model }};
+use {{ rootNamespace }}Http\Controllers\Controller;
+use {{ rootNamespace }}Repositories\Api\V1\{{ model }}Repository;
+use {{ rootNamespace }}Http\Resources\{{ model }}Resource;
+use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Builder;
+
+/**
+ * @group {{ model }}
+ * APIs to manage {{ model }}
+ */
+class {{ class }} extends Controller
+{
+    const RELATIONSHIPS = [
+
+    ];
+
+    /**
+     * Display a listing of {{ model }}.
+     * {{ indexDocs }}
+     * @queryParam filter array An array to filter fields. Example: [name]="john"
+     * @queryParam search string String to conduct full text search. Example: John Doe
+     * @queryParam page_size int Number of items to return per page. Example: 50
+     * @queryParam sort string Sort results by field. Example: -name will sort results by name in descending order
+     * @apiResourceCollection {{ rootNamespace }}Http\Resources\{{ model }}Resource
+     * @apiResourceModel {{ rootNamespace }}Models\{{ model }}
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index(Request $request, {{ model }}Repository $repository)
+    {
+        $pageSize = $request->page_size ?? 50;
+
+        ${{ modelVariable }}s = $repository->buildQuery()->with(self::RELATIONSHIPS);
+
+        if($search = $request->search){
+            ${{ modelVariable }}s = $repository->search($search)->query(function (Builder $builder) use(${{ modelVariable }}s){
+                $builder->with(self::RELATIONSHIPS);
+                $builder->whereIn('id', ${{ modelVariable }}s->get()->pluck('id'));
+            });
+        }
+
+        return {{ model }}Resource::collection(${{ modelVariable }}s->paginate($pageSize))->response();
+    }
+
+    /**
+     * Store a newly created {{ model }} in storage.
+     * {{ storeDocs }}
+     * @apiResource {{ rootNamespace }}Http\Resources\{{ model }}Resource
+     * @apiResourceModel {{ rootNamespace }}Models\{{ model }}
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request, {{ model }}Repository $repository)
+    {
+        $created = $repository->create($request->toArray());
+        return (new {{ model }}Resource($created))->response();
+    }
+
+    /**
+     * Display the specified {{ model }}.
+     * {{ showDocs }}
+     * @urlParam {{ model }} required {{ model }} ID
+     * @apiResource {{ rootNamespace }}Http\Resources\{{ model }}Resource
+     * @apiResourceModel {{ rootNamespace }}Models\{{ model }}
+     * @param  \{{ rootNamespace }}Models\${{ modelVariable }}
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function show({{ model }} ${{ modelVariable }})
+    {
+        return (new {{ model }}Resource(${{ modelVariable }}))->response();
+    }
+
+    /**
+     * Update the specified {{ model }} in storage.
+     * {{ updateDocs }}
+     * @urlParam {{ model }} required {{ model }} ID
+     * @apiResource {{ rootNamespace }}Http\Resources\{{ model }}Resource
+     * @apiResourceModel {{ rootNamespace }}Models\{{ model }}
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \{{ rootNamespace }}Models\${{ modelVariable }}
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request, {{ model }} ${{ modelVariable }}, {{ model }}Repository $repository)
+    {
+        $updated = $repository->update(${{ modelVariable }}, $request->toArray());
+        return (new {{ model }}Resource($updated))->response();
+    }
+
+    /**
+     * Remove the specified {{ model }} from storage.
+     * {{ deleteDocs }}
+     * @urlParam {{ model }} required {{ model }} ID
+     * @apiResource {{ rootNamespace }}Http\Resources\{{ model }}Resource
+     * @apiResourceModel {{ rootNamespace }}Models\{{ model }}
+     * @param  \{{ rootNamespace }}Models\${{ modelVariable }}
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy({{ model }} ${{ modelVariable }}, {{ model }}Repository $repository)
+    {
+        $deleted = $repository->forceDelete(${{ modelVariable }});
+
+        return (new {{ model }}Resource($deleted->loadMissing(self::RELATIONSHIPS)))->response();
+    }
+}

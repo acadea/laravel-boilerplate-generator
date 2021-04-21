@@ -1,0 +1,142 @@
+<?php
+
+namespace DummyNamespace;
+
+use {{ rootNamespace }}Events\Models\{{ model }}\{{ model }}Created;
+use {{ rootNamespace }}Events\Models\{{ model }}\{{ model }}PermanentlyDeleted;
+use {{ rootNamespace }}Events\Models\{{ model }}\{{ model }}Updated;
+use {{ rootNamespace }}Exceptions\GeneralJsonException;
+use {{ rootNamespace }}Models\{{ model }};
+use {{ rootNamespace }}Repositories\BaseRepository;
+use Illuminate\Support\Facades\DB;
+
+
+class {{ model }}Repository extends BaseRepository
+{
+    protected $allowedFilters;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->allowedFilters = [
+            '{{ filters }}'
+        ];
+    }
+
+    public function model()
+    {
+        return {{ model }}::class;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return {{ model }}
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function create(array $data): {{ model }}
+    {
+        return DB::transaction(function () use ($data) {
+            ${{ modelVariable }} = parent::create([
+                {{ createFields }}
+            ]);
+
+            /** @var {{ model }} ${{ modelVariable }} */
+            if (${{ modelVariable }}) {
+
+                {{ manyToManySync }}
+
+                event(new {{ model }}Created(${{ modelVariable }}));
+
+                return ${{ modelVariable }};
+            }
+
+            throw new GeneralJsonException('Unable to create.', 422);
+        });
+    }
+
+    /**
+     * @param {{ model }} ${{ modelVariable }}
+     * @param array $data
+     *
+     * @return {{ model }}
+     * @throws GeneralJsonException
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function update(${{ modelVariable }}, array $data): {{ model }}
+    {
+        return DB::transaction(function () use (${{ modelVariable }}, $data) {
+
+            if ($updated = ${{ modelVariable }}->update([
+                {{ updateFields }}
+            ])) {
+
+                {{ manyToManySync }}
+
+                event(new {{ model }}Updated(${{ modelVariable }}));
+
+                return ${{ modelVariable }};
+            }
+
+            throw new GeneralJsonException('Unable to update.', 422);
+        });
+    }
+
+
+    /**
+     * @param {{ model }} ${{ modelVariable }}
+     *
+     * @return {{ model }}
+     * @throws GeneralJsonException
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function forceDelete(${{ modelVariable }}): {{ model }}
+    {
+        return DB::transaction(function () use (${{ modelVariable }}) {
+            // Delete associated relationships
+
+            if (${{ modelVariable }}->forceDelete()) {
+                event(new {{ model }}PermanentlyDeleted(${{ modelVariable }}));
+
+                return ${{ modelVariable }};
+            }
+
+            throw new GeneralJsonException('Unable to delete', 422);
+        });
+    }
+
+    /**
+     * @param {{ model }} ${{ modelVariable }}
+     *
+     * @return {{ model }}
+     * @throws GeneralJsonException
+     */
+    public function restore(${{ modelVariable }}): {{ model }}
+    {
+        //        if (is_null(${{ modelVariable }}->deleted_at)) {
+        //            throw new GeneralJsonException(__('exceptions.backend.access.{{ modelVariable }}s.cant_restore'));
+        //        }
+        //
+        //        if (${{ modelVariable }}->restore()) {
+        //            event(new {{ model }}Restored(${{ modelVariable }}));
+        //
+        //            return ${{ modelVariable }};
+        //        }
+        //
+        //        throw new GeneralJsonException(__('exceptions.backend.access.{{ modelVariable }}s.restore_error'));
+    }
+
+    /**
+     * @param {{ model }} $model
+     * @return mixed|void
+     */
+    public function softDelete($model)
+    {
+        //        $result = parent::softDelete($model);
+        //        event(new {{ model }}Deleted($model));
+        //        return $result;
+    }
+}

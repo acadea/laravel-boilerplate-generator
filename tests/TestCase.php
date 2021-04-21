@@ -3,15 +3,21 @@
 namespace Acadea\Boilerplate\Tests;
 
 use Acadea\Boilerplate\BoilerplateServiceProvider;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    const TEST_FILE_PATH = __DIR__ . '/files';
+    const TEST_ASSERT_FILES_PATH = self::TEST_FILE_PATH . '/assert-sources';
+
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->withFactories(__DIR__.'/database/factories');
+        Factory::guessFactoryNamesUsing(
+            fn (string $modelName) => 'Acadea\\Boilerplate\\Tests\\Database\\Factories\\'.class_basename($modelName).'Factory'
+        );
     }
 
     protected function getPackageProviders($app)
@@ -29,6 +35,11 @@ class TestCase extends Orchestra
             'database' => ':memory:',
             'prefix' => '',
         ]);
+
+        // set test-schema to boilerplate-generator/vendor/orchestra/testbench-core/laravel/tests/files/test-schema.php
+        $app['config']->set('boilerplate.paths.schema-structure', '/../../../../tests/files/test-schema.php');
+
+
 
         /*
         include_once __DIR__.'/../database/migrations/create_skeleton_tables.php.stub';

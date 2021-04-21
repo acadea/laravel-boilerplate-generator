@@ -5,7 +5,7 @@ namespace Acadea\Boilerplate\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
@@ -20,6 +20,7 @@ class ApiRouteMakeCommand extends GeneratorCommand
     protected function getStub()
     {
         $stub = '/stubs/route.stub';
+
         return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
             ? $customPath
             : __DIR__. '/..' . $stub;
@@ -35,9 +36,9 @@ class ApiRouteMakeCommand extends GeneratorCommand
     {
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
 
-        $kebab =  Str::kebab(Str::camel($name));
+        $kebab = Str::kebab(Str::camel($name));
 
-        return $this->laravel['path'].'/routes/api/v1/'.str_replace('\\', '/', $kebab).'.php';
+        return App::basePath().'/routes/api/v1/'.str_replace('\\', '/', $kebab).'.php';
     }
 
     /**
@@ -45,7 +46,7 @@ class ApiRouteMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'boilerplate:route {name} {--model= : The model that this repo based on.}';
+    protected $signature = 'boilerplate:route {name} {--model= : The model that this repo based on.} {--force= : Force to regenerate api route file}';
 
     /**
      * The console command description.
@@ -63,9 +64,7 @@ class ApiRouteMakeCommand extends GeneratorCommand
      */
     public function handle()
     {
-        parent::handle();
-
-
+        return tap(parent::handle(), fn ($result) => dump("Created Route {$this->qualifyClass($this->getNameInput())}"));
     }
 
     public function buildClass($name)
@@ -122,6 +121,9 @@ class ApiRouteMakeCommand extends GeneratorCommand
             throw new ModelNotFoundException('Model does not exist. Namespace: ' . $modelClass);
         }
 
+        // needs to be kebab cased
+        $modelKebabPlural = strtolower(Str::kebab(Str::camel(Str::plural(class_basename($modelClass)))));
+
         return array_merge($replace, [
             'DummyFullModelClass' => $modelClass,
             '{{ namespacedModel }}' => $modelClass,
@@ -132,6 +134,8 @@ class ApiRouteMakeCommand extends GeneratorCommand
             'DummyModelVariable' => lcfirst(class_basename($modelClass)),
             '{{ modelVariable }}' => lcfirst(class_basename($modelClass)),
             '{{modelVariable}}' => lcfirst(class_basename($modelClass)),
+            '{{modelKebabPlural}}' => $modelKebabPlural,
+            '{{ modelKebabPlural }}' => $modelKebabPlural,
         ]);
     }
 
@@ -144,6 +148,7 @@ class ApiRouteMakeCommand extends GeneratorCommand
     {
         return [
             ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this route is based on.'],
+            ['force', 'f', InputOption::VALUE_OPTIONAL, 'Force to regenerate boilerplate.'],
         ];
     }
 }

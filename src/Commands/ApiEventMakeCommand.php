@@ -19,7 +19,9 @@ class ApiEventMakeCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return $this->laravel->basePath(trim('/stubs/event.api.stub', '/'));
+        return file_exists($customPath = $this->laravel->basePath(trim('/stubs/event.api.stub', '/')))
+            ? $customPath
+            : __DIR__. '/..' . '/stubs/event.api.stub';
     }
 
     /**
@@ -27,7 +29,7 @@ class ApiEventMakeCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $signature = 'boilerplate:api-event {name} {--model= : The model that this event based on.}';
+    protected $signature = 'boilerplate:api-event {name} {--model= : The model that this event based on.} {--force= : Force to create the class even if exists}';
 
     /**
      * The console command description.
@@ -46,7 +48,7 @@ class ApiEventMakeCommand extends GeneratorCommand
      */
     protected function getDefaultNamespace($rootNamespace)
     {
-        return $rootNamespace.'\Events\Api\\' . Str::ucfirst($this->getModelName()) ;
+        return $rootNamespace.'\Events\Models\\' . Str::ucfirst($this->getModelName()) ;
     }
 
     /**
@@ -56,7 +58,7 @@ class ApiEventMakeCommand extends GeneratorCommand
      */
     public function handle()
     {
-        parent::handle();
+        return tap(parent::handle(), fn ($result) => dump("Created Event {$this->qualifyClass($this->getNameInput())}"));
     }
 
     public function buildClass($name)
@@ -137,6 +139,8 @@ class ApiEventMakeCommand extends GeneratorCommand
     {
         return [
             ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this repository is based on.'],
+            ['force', null, InputOption::VALUE_NONE, 'Create the class even if the event already exists'],
+
         ];
     }
 }
