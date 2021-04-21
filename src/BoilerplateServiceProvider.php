@@ -3,6 +3,7 @@
 namespace Acadea\Boilerplate;
 
 use Acadea\Boilerplate\Commands\ApiEventMakeCommand;
+use Acadea\Boilerplate\Commands\ApiResourceMakeCommand;
 use Acadea\Boilerplate\Commands\ApiRouteMakeCommand;
 use Acadea\Boilerplate\Commands\BoilerplateInitCommand;
 use Acadea\Boilerplate\Commands\BoilerplateInstallCommand;
@@ -45,6 +46,7 @@ class BoilerplateServiceProvider extends ServiceProvider
                 BoilerplateInstallCommand::class,
                 RepositoryMakeCommand::class,
                 ApiEventMakeCommand::class,
+                ApiResourceMakeCommand::class,
                 ModelMakeCommand::class,
                 ApiRouteMakeCommand::class,
                 MigrateMakeCommand::class,

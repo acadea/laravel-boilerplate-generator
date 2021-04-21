@@ -42,17 +42,6 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
         return tap(parent::handle(), fn($result) => dump("Created Factory {$this->qualifyClass($this->getNameInput())}"));
     }
 
-
-    protected function getModelName()
-    {
-        $controller = $this->argument('name');
-
-        $model = substr($controller, 0, strlen($controller) - strlen($this->type));
-
-        return lcfirst(class_basename($this->parseModel($model)));
-    }
-
-
     /**
      * Build the class with the given name.
      *
@@ -90,7 +79,7 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
         $structure = SchemaStructure::get();
 
         // get model name
-        $model = Str::snake(Str::camel(Str::singular($this->getModelName())));
+        $model = strtolower(Str::snake(Str::camel(Str::singular($this->getModelName()))));
 
         // find the fields from structure
         $fields = data_get($structure, strtolower($model));

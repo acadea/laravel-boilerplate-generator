@@ -50,12 +50,6 @@ class BoilerplateInstallCommand extends GeneratorCommand
         dump('Installing composer packages..');
         $this->laravel->make(Composer::class)->run(['require', ...$packages]);
 
-//        collect($packages)->each(function ($package) {
-//            $this->laravel->make(Composer::class)->run(['require', $package]);
-//        });
-
-        // composer install
-
         // TODO: create a dummy structure.php file as well
         // load stub and push to exception folder
         $stubs = [

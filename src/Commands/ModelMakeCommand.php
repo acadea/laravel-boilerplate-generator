@@ -109,8 +109,9 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
         if($this->option('resource')){
             // create resource class
-            $this->call('make:resource', [
+            $this->call('boilerplate:resource', [
                 'name' => $name . 'Resource',
+                '--force' => $this->option('force'),
             ]);
         }
 

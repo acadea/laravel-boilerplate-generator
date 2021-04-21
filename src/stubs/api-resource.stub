@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class UserResource extends JsonResource
+class {{ model }}Resource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,13 +15,9 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
-        $avatar_location = $this->avatar_location;
-
         return [
-            // TODO: complete this
             'id' => data_get($this, 'id'),
             {{ fields }}
-            {{ timestamps }}
             'created_at' => (string)data_get($this, 'created_at'),
             'updated_at' => (string)data_get($this, 'updated_at'),
         ];
