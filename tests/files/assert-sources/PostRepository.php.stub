@@ -1,0 +1,154 @@
+<?php
+
+namespace App\Repositories\Api\V1;
+
+use App\Events\Models\Post\PostCreated;
+use App\Events\Models\Post\PostPermanentlyDeleted;
+use App\Events\Models\Post\PostUpdated;
+use App\Exceptions\GeneralJsonException;
+use App\Models\Post;
+use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\DB;
+
+class PostRepository extends BaseRepository
+{
+    protected $allowedFilters;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->allowedFilters = [
+            'title', 'body', 'book_author_id', 'price', 'published',
+        ];
+    }
+
+    public function model()
+    {
+        return Post::class;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return Post
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function create(array $data): Post
+    {
+        return DB::transaction(function () use ($data) {
+            $post = parent::create([
+                'title' => data_get($data, 'title'),
+                'body' => data_get($data, 'body'),
+                'options' => data_get($data, 'options'),
+                'book_author_id' => data_get($data, 'book_author_id'),
+                'price' => data_get($data, 'price'),
+                'published' => data_get($data, 'published'),
+
+            ]);
+
+            /** @var Post $post */
+            if ($post) {
+                if (data_get($data, 'post_ids')) {
+                    $post->tags()->sync(data_get($data, 'post_ids'));
+                }
+
+                event(new PostCreated($post));
+
+                return $post;
+            }
+
+            throw new GeneralJsonException('Unable to create.', 422);
+        });
+    }
+
+    /**
+     * @param Post $post
+     * @param array $data
+     *
+     * @return Post
+     * @throws GeneralJsonException
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function update($post, array $data): Post
+    {
+        return DB::transaction(function () use ($post, $data) {
+            if ($updated = $post->update([
+                'title' => data_get($data, 'title') ?? $post->title,
+                'body' => data_get($data, 'body') ?? $post->body,
+                'options' => data_get($data, 'options') ?? $post->options,
+                'book_author_id' => data_get($data, 'book_author_id') ?? $post->book_author_id,
+                'price' => data_get($data, 'price') ?? $post->price,
+                'published' => data_get($data, 'published') ?? $post->published,
+
+            ])) {
+                if (data_get($data, 'post_ids')) {
+                    $post->tags()->sync(data_get($data, 'post_ids'));
+                }
+
+                event(new PostUpdated($post));
+
+                return $post;
+            }
+
+            throw new GeneralJsonException('Unable to update.', 422);
+        });
+    }
+
+
+    /**
+     * @param Post $post
+     *
+     * @return Post
+     * @throws GeneralJsonException
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function forceDelete($post): Post
+    {
+        return DB::transaction(function () use ($post) {
+            // Delete associated relationships
+
+            if ($post->forceDelete()) {
+                event(new PostPermanentlyDeleted($post));
+
+                return $post;
+            }
+
+            throw new GeneralJsonException('Unable to delete', 422);
+        });
+    }
+
+    /**
+     * @param Post $post
+     *
+     * @return Post
+     * @throws GeneralJsonException
+     */
+    public function restore($post): Post
+    {
+        //        if (is_null($post->deleted_at)) {
+        //            throw new GeneralJsonException(__('exceptions.backend.access.posts.cant_restore'));
+        //        }
+        //
+        //        if ($post->restore()) {
+        //            event(new PostRestored($post));
+        //
+        //            return $post;
+        //        }
+        //
+        //        throw new GeneralJsonException(__('exceptions.backend.access.posts.restore_error'));
+    }
+
+    /**
+     * @param Post $model
+     * @return mixed|void
+     */
+    public function softDelete($model)
+    {
+        //        $result = parent::softDelete($model);
+        //        event(new PostDeleted($model));
+        //        return $result;
+    }
+}

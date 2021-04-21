@@ -1,0 +1,14 @@
+// loads all v1 api routes
+Route::group([
+    'namespace' => 'V1',
+    'prefix' => 'v1',
+    'as' => 'v1.',
+
+], function () {
+    /**
+     * All route names are prefixed with 'api.v1.'.
+     */
+
+    include_route_files(__DIR__ . '/v1/');
+
+});

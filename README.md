@@ -5,11 +5,11 @@
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/acadea/laravel-boilerplate-generator/run-tests?label=tests)](https://github.com/acadea/laravel-boilerplate-generator/actions?query=workflow%3Arun-tests+branch%3Amaster)
 [![Total Downloads](https://img.shields.io/packagist/dt/acadea/laravel-boilerplate-generator.svg?style=flat-square)](https://packagist.org/packages/acadea/laravel-boilerplate-generator)
 
-
 An opinionated boilerplate generator. Generate boilerplates like repositories, routes, events, api docs and much more!
 
 ## NOTE
-This project is still under development and unusable. 
+
+This project is still under development and unusable.
 
 ## Installation
 
@@ -27,6 +27,7 @@ php artisan migrate
 ```
 
 You can publish the config file with:
+
 ```bash
 php artisan vendor:publish --provider="Acadea\Boilerplate\BoilerplateServiceProvider" --tag="config"
 ```
@@ -40,19 +41,108 @@ return [
 
 ## Usage
 
-First, define a `schema.php` file in the `database` folder. You can overwrite the default file path in the `boilerplate.php` config file. 
+First, define a `schema.php` file in the `database` folder. You can overwrite the default file path in
+the `boilerplate.php` config file.
 
 ### Structure of `schema.php`
-```
-```
 
-``` php
-$skeleton = new Acadea\Boilerplate();
-echo $skeleton->echoPhrase('Hello, Acadea!');
+Must follow convention
+Pivot: post_tag
+
+Model name must be singular and snake-cased
+
+```php
+
+return [
+    'post' => [
+        'title' => [
+            // any column type supported by eloquent
+            // https://laravel.com/docs/8.x/migrations#available-column-types
+            'type' => 'string', 
+            // attributes are column modifier  
+            // https://laravel.com/docs/8.x/migrations#column-modifiers
+            'attributes' => [
+                // put a flat string if no argument to pass to the modifier
+                'nullable',  
+                // if we need to pass arguments to the modifier
+                // array key is the modifier method, value should be an array of arguments value to pass to the modifier
+                'default' => ['some post'],   
+            ], 
+        ],
+        'body' => [
+            'type' => 'mediumText',
+            'attributes' => ['nullable'],
+        ],
+        'book_author_id' => [
+            'type' => 'foreignId',
+            'foreign' => [
+                'references' => 'id',
+                'on' => 'book_authors',
+            ],
+        ],
+        // will add belongsToMany relationship to model
+        'tags' => [
+            'type' => 'pivot',
+            'pivot' => [
+                'table' => 'post_tag',
+                'related_key' => 'post_id',
+                'foreign_key' => 'tag_id',
+
+            ]
+        ]
+
+    ],
+    
+    // PIVOT TABLE
+    // add 'pivot:' before table name to create pivot migration
+    'pivot:post_tag' => [
+        'post_id' => [
+            // to set this column as primary key in the pivot table
+            'primary' => true,
+            'type' => 'foreignId',
+            'attributes' => [
+                'index'
+            ],
+            'foreign' => [
+                'references' => 'id',
+                'on' => 'posts',
+            ],
+        ],
+        'tag_id' => [
+            'primary' => true,
+            'type' => 'foreignId',
+            'attributes' => [
+                'index'
+            ],
+            'foreign' => [
+                'references' => 'id',
+                'on' => 'tags',
+            ],
+        ],
+
+    ],
+];
 ```
+### API routes
+This package will bootstrap all the boilerplate routes for you.
+
+However, you will need to include the following code in `api.php` for the boilerplate to work correctly.
+
+```php
+Route::group([
+    'namespace' => 'Api',
+    'as' => 'api.',
+    'middleware' => [
+        'auth:sanctum',
+    ],
+], function () {
+    require __DIR__ . '/api/v1.php';
+});
+```
+Alternatively, you can run the `boilerplate:install` command, this package will overwrite the `api.php` file for you. 
 
 ## Caveats
-1. `hasMany` Relationship is not loaded to the boilerplate
+
 
 
 ## Testing

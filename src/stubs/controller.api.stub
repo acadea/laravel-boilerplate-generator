@@ -8,7 +8,6 @@ use {{ rootNamespace }}Repositories\Api\V1\{{ model }}Repository;
 use {{ rootNamespace }}Http\Resources\{{ model }}Resource;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\JsonResponse;
 
 /**
  * @group {{ model }}

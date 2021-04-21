@@ -2,14 +2,14 @@
 
 namespace Acadea\Boilerplate\Commands;
 
-use Acadea\Boilerplate\Commands\traits\ParseModel;
-use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
+use Acadea\Boilerplate\Commands\Traits\ParseModel;
+use Acadea\Boilerplate\Commands\Traits\ResolveStubPath;
 use Acadea\Boilerplate\Utils\DataType;
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Acadea\Fixer\Facade\Fixer;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCommand
 {
@@ -49,6 +49,23 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         }
 
         return $rootNamespace . '\Http\Controllers';
+    }
+
+    /**
+     * Get the stub file for the generator.
+     *
+     * @return string
+     */
+    protected function getStub()
+    {
+        $stub = '/stubs/controller.api.stub';
+
+        return $this->resolveStubPath($stub);
+    }
+
+    public function handle()
+    {
+        return tap(parent::handle(), fn ($result) => dump("Created Controller {$this->qualifyClass($this->getNameInput())}"));
     }
 
 
@@ -121,6 +138,8 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
     {
         $model = $this->getModelName();
 
+        $model = Str::snake(Str::camel(Str::singular($model)));
+
         // To read the file where the schema structure is defined.
         $fields = data_get(SchemaStructure::get(), $model);
 
@@ -132,7 +151,7 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
     private function generateBodyParams($field, $value, $required = true)
     {
         // if attributes contain 'nullable'
-        $nullable = collect(data_get($value, 'attribute'))->contains('nullable');
+        $nullable = collect(data_get($value, 'attributes'))->contains('nullable');
 
         $doc = '@bodyParam ' . $field;
 
@@ -159,40 +178,45 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         // for each field generate docs and example
         return collect($fields)->map(function ($value, $field) {
             return $this->generateBodyParams($field, $value, true);
-        })->join("\n*");
+        })->join("\n     * ");
     }
 
     protected function generateExample($dataType)
     {
         $faker = $this->laravel->make(Generator::class);
+        $faker->seed(1);
 
         $dataType = DataType::standardise($dataType);
 
         switch ($dataType) {
-            case 'integer' || 'foreignId':
+            case 'integer':
+                return 1;
+            case 'foreignId':
                 return 1;
             case 'boolean':
-                return Arr::random([true, false]);
+                return true;
             case 'string':
-                return $faker->text;
+                return $faker->text(20);
             case 'date':
                 return $faker->date();
             case 'float':
                 return $faker->randomNumber(3);
             case 'text':
-                return $faker->paragraph(3);
+                return $faker->text(80);
             case 'timestamp':
                 return $faker->unixTime();
             case 'ipAddress':
                 return $faker->ipv4;
             case 'json':
-                return $faker->words(3);
+                return json_encode($faker->words(3));
             case 'macAddress':
                 return $faker->macAddress;
             case 'uuid':
                 return $faker->uuid;
             case 'year':
                 return $faker->year;
+            case 'intArrays':
+                return '[1, 2]';
             default:
                 return '';
         }
@@ -204,9 +228,9 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
         $fields = $this->getDbStructure();
 
         // for each field generate docs and example
-        return collect($fields)->map(function ($value, $field) {
-            return $this->generateBodyParams($field, $value, false);
-        })->join("\n*");
+        return collect($fields)->map(function ($value, $fieldName) {
+            return $this->generateBodyParams($fieldName, $value, false);
+        })->join("\n     * ");
     }
 
     public function generateShowDocs()

@@ -12,6 +12,22 @@ abstract class BaseRepository
     protected $allowedFilters = [];
     protected $allowedSorts = [];
 
+    /**
+     * @return array
+     */
+    public function getAllowedFilters(): array
+    {
+        return $this->allowedFilters;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedSorts(): array
+    {
+        return $this->allowedSorts;
+    }
+
     public function __construct()
     {
         $model = app()->make($this->model());

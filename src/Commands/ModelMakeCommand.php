@@ -2,12 +2,17 @@
 
 namespace Acadea\Boilerplate\Commands;
 
+use Acadea\Boilerplate\Commands\Traits\Model\ReplaceRelations;
 use Acadea\Boilerplate\Utils\SchemaStructure;
+use Acadea\Fixer\Facade\Fixer;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
+use Symfony\Component\Console\Input\InputOption;
 
 class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 {
+    use ReplaceRelations;
 
     /**
      * The console command name.
@@ -24,6 +29,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     protected $description = 'Eloquent model class with loaded boilerplate.';
 
 
+
     /**
      * Location of the file
      * @param string $name
@@ -33,7 +39,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     {
         $name = Str::replaceFirst($this->rootNamespace(), '', $name);
 
-        return $this->laravel['path'].'/Models/'.str_replace('\\', '/', $name).'.php';
+        return $this->laravel->basePath() . '/app/' . str_replace('\\', '/', $name) . '.php';
     }
 
 
@@ -53,7 +59,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         if ((! $this->hasOption('force') ||
                 ! $this->option('force')) &&
             $this->alreadyExists($this->getNameInput())) {
-            $this->error($this->type.' already exists!');
+            $this->error($this->type . ' already exists!');
 
             return false;
         }
@@ -71,9 +77,10 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
         $content = $this->replaceRelations($content, $this->getNameInput());
 
-        $this->files->put($path, $this->sortImports($content));
+        $this->files->put($path, Fixer::format($this->sortImports($content)));
 
-        $this->info($this->type.' created successfully.');
+        dump("Created Model {$this->qualifyClass($this->getNameInput())}");
+        $this->info($this->type . ' created successfully.');
     }
 
     /**
@@ -84,37 +91,10 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     public function handle()
     {
         if ($this->handleInit() === false && ! $this->option('force')) {
-            return ;
+            return;
         }
 
-        if ($this->option('all')) {
-            $name = Str::studly(class_basename($this->argument('name')));
-
-            // create resource class
-            $this->call('make:resource', [
-                'name' => $name.'Resource',
-            ]);
-
-
-            // generate event classes if passed --event flag
-            $eventClasses = ['Created', 'PermanentlyDeleted', 'Updated', 'Restored', 'Deleted'];
-            collect($eventClasses)->each(function ($class) use ($name) {
-                Artisan::call('boilerplate:api-event', [
-                    'name' => $name . $class,
-                    '--model' => $name,
-                ]);
-            });
-
-            // create repo
-            $this->call('boilerplate:repository', [
-                'name' => $name.'Repository',
-            ]);
-
-            // create routes
-            $this->call('boilerplate:route', [
-                'name' => $name,
-            ]);
-        }
+        $name = Str::studly(class_basename($this->argument('name')));
 
         if ($this->option('all')) {
             $this->input->setOption('factory', true);
@@ -122,6 +102,47 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             $this->input->setOption('migration', true);
             $this->input->setOption('controller', true);
             $this->input->setOption('resource', true);
+            $this->input->setOption('api-events', true);
+            $this->input->setOption('repository', true);
+            $this->input->setOption('route', true);
+            $this->input->setOption('test', true);
+        }
+
+        if ($this->option('resource')) {
+            // create resource class
+            $this->call('boilerplate:resource', [
+                'name' => $name . 'Resource',
+                '--force' => $this->option('force'),
+            ]);
+        }
+
+        if ($this->option('api-events')) {
+            // generate event classes if passed --api-event flag
+            $eventClasses = ['Created', 'PermanentlyDeleted', 'Updated', 'Restored', 'Deleted'];
+            collect($eventClasses)->each(function ($class) use ($name) {
+                dump("Creating API event class: {$name}{$class}");
+                Artisan::call('boilerplate:api-event', [
+                    'name' => $name . $class,
+                    '--model' => $name,
+                    '--force' => $this->option('force'),
+                ]);
+            });
+        }
+
+        if ($this->option('repository')) {
+            // create repo
+            $this->call('boilerplate:repository', [
+                'name' => $name . 'Repository',
+                '--force' => $this->option('force'),
+            ]);
+        }
+
+        if ($this->option('route')) {
+            // create routes
+            $this->call('boilerplate:route', [
+                'name' => $name,
+                '--force' => $this->option('force'),
+            ]);
         }
 
         if ($this->option('factory')) {
@@ -141,6 +162,13 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
 
             // create requests files
         }
+
+        if ($this->option('test')) {
+            $this->call('boilerplate:test', [
+                'name' => "{$name}ApiTest",
+                '--force' => $this->option('force'),
+            ]);
+        }
     }
 
     /**
@@ -155,6 +183,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $this->call('boilerplate:factory', [
             'name' => "{$factory}Factory",
             '--model' => $this->qualifyClass($this->getNameInput()),
+            '--force' => $this->option('force'),
         ]);
     }
 
@@ -168,7 +197,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $table = Str::snake(Str::pluralStudly(class_basename($this->argument('name'))));
 
         if ($this->option('pivot')) {
-            $table = Str::singular($table);
+            $table = Str::singular($table) . '_pivot';
         }
 
         $this->call('boilerplate:migration', [
@@ -206,26 +235,27 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             'name' => "{$controller}Controller",
             '--model' => $this->option('resource') || $this->option('api') ? $modelName : null,
             '--api' => $this->option('api'),
+            '--force' => $this->option('force'),
         ]));
     }
 
     /**
      * Resolve the fully-qualified path to the stub.
      *
-     * @param  string  $stub
+     * @param string $stub
      * @return string
      */
     protected function resolveStubPath($stub)
     {
         return file_exists($customPath = $this->laravel->basePath(trim($stub, '/')))
-                        ? $customPath
-                        : __DIR__. '/..' . $stub;
+            ? $customPath
+            : __DIR__ . '/..' . $stub;
     }
 
 
     protected function getModelFields($modelName)
     {
-        return data_get(SchemaStructure::get(), strtolower(Str::singular($modelName)));
+        return data_get(SchemaStructure::get(), strtolower(Str::snake(Str::camel(Str::singular($modelName)))));
     }
 
     protected function replaceFillables($stub, $name)
@@ -243,15 +273,21 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     protected function replaceCasts($stub, $name)
     {
         $fields = $this->getModelFields($name);
+        $castMap = [
+            'timestamp' => 'timestamp',
+            'json' => 'array',
+            'boolean' => 'boolean',
+        ];
+        // cast boolean field
 
         // filter timestamp and json fields
-        $fields = collect($fields)->filter(function ($field) {
+        $fields = collect($fields)->filter(function ($field) use ($castMap) {
             // check if field is date time or json
             $type = data_get($field, 'type');
 
-            return  $type === 'timestamp' || $type === 'json';
-        })->map(function ($field, $fieldName) {
-            $cast = data_get($field, 'type') === 'json' ? 'array' : 'timestamp';
+            return Arr::has($castMap, $type);
+        })->map(function ($field, $fieldName) use ($castMap) {
+            $cast = data_get($castMap, data_get($field, 'type'));
 
             return '\'' . $fieldName . '\' => \'' . $cast . '\'';
         });
@@ -259,33 +295,22 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         return str_replace(['{{ casts }}', '{{casts}}'], $fields->join(','), $stub);
     }
 
-    protected function replaceRelations($stub, $name)
+    protected function getOptions()
     {
-        $fields = $this->getModelFields($name);
-
-        $generateRelationFunction = function ($fieldName) use ($name) {
-
-            // fieldname should be snakecase
-            $camelName = Str::camel($fieldName);
-            $fieldName = Str::snake($camelName);
-            $exploded = explode('_', $fieldName);
-            // get rid of last element, which is usually 'id'
-            $relationName = implode('_', array_slice($exploded, 0, sizeof($exploded) - 1));
-
-            return 'public function ' . $relationName . '()' .
-                '{' .
-                '    return $this->belongsTo(\\App\\Models\\'.Str::studly($name).'::class, \''. $fieldName .'\');' .
-                '}';
-        };
-
-        $fields = collect($fields)->filter(function ($field) {
-            return data_get($field, 'foreign');
-        })->map(function ($field, $fieldName) use ($generateRelationFunction) {
-            // TODO: what about pivot table?
-            // fieldName looks something like author_id
-            return $generateRelationFunction($fieldName);
-        });
-
-        return str_replace(['{{ relations }}', '{{relations}}'], $fields->join("\n"), $stub);
+        return [
+            ['all', 'a', InputOption::VALUE_NONE, 'Generate a migration, seeder, factory, and resource controller for the model'],
+            ['controller', 'c', InputOption::VALUE_NONE, 'Create a new controller for the model'],
+            ['factory', 'f', InputOption::VALUE_NONE, 'Create a new factory for the model'],
+            ['force', null, InputOption::VALUE_NONE, 'Create the class even if the model already exists'],
+            ['migration', 'm', InputOption::VALUE_NONE, 'Create a new migration file for the model'],
+            ['seed', 's', InputOption::VALUE_NONE, 'Create a new seeder file for the model'],
+            ['pivot', 'p', InputOption::VALUE_NONE, 'Indicates if the generated model should be a custom intermediate table model'],
+            ['resource', 'r', InputOption::VALUE_NONE, 'Indicates if the generated controller should be a resource controller'],
+            ['api', null, InputOption::VALUE_NONE, 'Indicates if the generated controller should be an API controller'],
+            ['api-events', null, InputOption::VALUE_NONE, 'Create events for the generated model'],
+            ['route', null, InputOption::VALUE_NONE, 'Create a route file for the generated model'],
+            ['repository', null, InputOption::VALUE_NONE, 'Create repository for the generated model'],
+            ['test', null, InputOption::VALUE_NONE, 'Create feature tests for the controller'],
+        ];
     }
 }

@@ -2,17 +2,19 @@
 
 namespace Acadea\Boilerplate\Commands;
 
-use Acadea\Boilerplate\Commands\traits\ParseModel;
-use Acadea\Boilerplate\Commands\traits\ResolveStubPath;
+use Acadea\Boilerplate\Commands\Traits\ParseModel;
+use Acadea\Boilerplate\Commands\Traits\ResolveStubPath;
 use Acadea\Boilerplate\Utils\DataType;
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Acadea\Fixer\Facade\Fixer;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
 
 class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryMakeCommand
 {
     use ParseModel,
         ResolveStubPath;
+
 
     /**
      * The console command name.
@@ -35,16 +37,10 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
      */
     protected $type = 'Factory';
 
-
-    protected function getModelName()
+    public function handle()
     {
-        $controller = $this->argument('name');
-
-        $model = substr($controller, 0, strlen($controller) - strlen($this->type));
-
-        return lcfirst(class_basename($this->parseModel($model)));
+        return tap(parent::handle(), fn ($result) => dump("Created Factory {$this->qualifyClass($this->getNameInput())}"));
     }
-
 
     /**
      * Build the class with the given name.
@@ -83,23 +79,30 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
         $structure = SchemaStructure::get();
 
         // get model name
-        $model = $this->getModelName();
+        $model = strtolower(Str::snake(Str::camel(Str::singular($this->getModelName()))));
 
         // find the fields from structure
         $fields = data_get($structure, strtolower($model));
 
         // generate faker
-        return collect($fields)->map(function ($field, $name) {
-            return "'{$name}' => " . $this->generateFakerField(data_get($field, 'type')) . ',';
-        })->join("\n");
+        return collect($fields)
+            ->filter(fn ($field) => data_get($field, 'type') !== 'pivot')
+            ->map(function ($field, $name) {
+                return "'{$name}' => " . $this->generateFakerField(data_get($field, 'type'), $name) . ',';
+            })->join("\n");
     }
 
-    protected function generateFakerField($dataType)
+    protected function generateFakerField($dataType, $fieldName)
     {
-        $model = ucfirst($this->getModelName());
+        // field name is something like 'name' or 'post_id'
         switch (DataType::standardise($dataType)) {
             case 'foreignId':
-                return '\Factories\Helpers\getRandomModelId(\App\Models\\' . $model . '::class)';
+                $model = substr($fieldName, 0, -3);
+                $model = Str::studly(Str::camel($model));
+
+                return '\Database\Factories\Helpers\FactoryHelper::getRandomModelId(\App\Models\\' . $model . '::class)';
+            case 'intArrays':
+                return '[]';
             case 'integer':
                 return '$this->faker->numberBetween(1,100)';
             case 'boolean':
@@ -125,7 +128,7 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
             case 'year':
                 return '$this->faker->year';
             default:
-                return '';
+                return '\'\'';
 
         }
     }
@@ -139,6 +142,7 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
     {
         return [
             ['model', 'm', InputOption::VALUE_OPTIONAL, 'The name of the model'],
+            ['force', 'f', InputOption::VALUE_OPTIONAL, 'force to generate'],
         ];
     }
 }

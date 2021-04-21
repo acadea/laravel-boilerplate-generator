@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [ 'title','body','options','book_author_id','price','published','tags' ];
+
+    protected $casts = [
+        'options' => 'array','published' => 'boolean',
+    ];
+
+    public function comments()
+    {
+        return $this->hasMany(\App\Models\Comment::class, 'comment');
+    }
+    public function book_author()
+    {
+        return $this->belongsTo(\App\Models\BookAuthor::class, 'book_author_id');
+    }
+    public function tags()
+    {
+        return $this->belongsToMany(\App\Models\Tag::class, 'post_tag', 'post_id', 'tag_id');
+    }
+}

@@ -3,6 +3,7 @@
 
 namespace Acadea\Boilerplate\Utils;
 
+use Acadea\Boilerplate\Exceptions\AttributeValueMustBeArrayException;
 use Acadea\Fixer\Facade\Fixer;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
@@ -10,6 +11,79 @@ use League\Flysystem\FileNotFoundException;
 
 class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
 {
+    private function isPivot($name)
+    {
+        return substr(strtolower($name), 0, 6) === 'pivot:';
+    }
+    /**
+     * Get the migration stub file.
+     *
+     * @param  string|null  $table
+     * @param  bool  $create
+     * @return string
+     */
+    protected function getStub($table, $create)
+    {
+        $isPivot = $this->isPivot($table);
+
+        if (is_null($table)) {
+            $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.stub')
+                ? $customPath
+                : $this->stubPath().'/migration.stub';
+        } elseif ($create && ! $isPivot) {
+            $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.create.stub')
+                ? $customPath
+                : $this->stubPath().'/migration.create.stub';
+        } elseif ($create && $isPivot) {
+            $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.pivot.stub')
+                ? $customPath
+                : $this->stubPath().'/migration.pivot.stub';
+        } else {
+            $stub = $this->files->exists($customPath = $this->customStubPath.'/migration.update.stub')
+                ? $customPath
+                : $this->stubPath().'/migration.update.stub';
+        }
+
+        return $this->files->get($stub);
+    }
+
+    /**
+     * Get the full path to the migration.
+     *
+     * @param  string  $name
+     * @param  string  $path
+     * @return string
+     */
+    protected function getPath($name, $path)
+    {
+        $name = $this->removePivotFromName($name);
+
+        return $path.'/'.$this->getDatePrefix().'_'.$name.'.php';
+    }
+
+    private function removePivotFromName(string $name)
+    {
+        // $name is something like: create_veges_table
+        $splitted = explode('_', $name);
+        $isPivot = $this->isPivot($splitted[1]);
+        if ($isPivot) {
+            $splitted[1] = substr($splitted[1], 6);
+            $name = implode('_', $splitted);
+        }
+
+        return $name;
+    }
+
+    /**
+     * Get the class name of a migration name.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getClassName($name)
+    {
+        return Str::studly($this->removePivotFromName($name));
+    }
 
     /**
      * Populate the place-holders in the migration stub.
@@ -33,7 +107,7 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
         if (! is_null($table)) {
             $stub = str_replace(
                 ['DummyTable', '{{ table }}', '{{table}}'],
-                $table,
+                str_replace('pivot:', '', $table), // remove 'pivot:' prefix if exist
                 $stub
             );
 
@@ -56,29 +130,37 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
         }
         $structure = require $schemaPath;
 
-
         $fields = data_get($structure, strtolower(Str::singular($table)));
 
         $strings = collect($fields)->map(function ($props, $fieldName) {
             $fieldName = Str::snake(Str::camel($fieldName));
+
+            // skipping pivot entry
+            if (data_get($props, 'type') === 'pivot') {
+                return '';
+            }
+
             $payload = '$table->'.data_get($props, 'type') . '(' . var_export($fieldName, true) . ')';
 
             $attributes = data_get($props, 'attributes');
 
-
             if (is_array($attributes)) {
                 foreach ($attributes as $key => $value) {
                     $arguments = '';
-                    if (! is_integer($key) && is_array($value)) {
-                        // has arguments passed to value
-                        $value = array_map(fn ($val) => var_export($val, true), $value);
-                        $arguments = implode(', ', $value);
+                    if (! is_integer($key) && ! is_array($value)) {
+                        throw new AttributeValueMustBeArrayException("Key: {$key}, Value: {$value}");
                     }
 
+                    if (! is_integer($key) && is_array($value)) {
+                        // has arguments passed to value
+                        // turning arg into comma joined string
+                        $value = array_map(fn ($val) => var_export($val, true), $value);
+                        // reset value to the key
+                        [$value, $arguments] = [$key, implode(', ', $value)];
+                    }
                     $payload .= '->'.$value.'(' . $arguments .')';
                 }
             }
-
 
             if (($foreign = data_get($props, 'foreign')) !== null) {
                 $payload .= ';';
@@ -89,8 +171,18 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
 
             return $payload . ';';
         });
-        dump($strings);
 
-        return implode("\n", array_values($strings->toArray()));
+        // filter all primary keys
+        $primaryKeys = collect($fields)->filter(function ($field) {
+            return data_get($field, 'primary');
+        })->keys();
+
+        if ($primaryKeys->isNotEmpty()) {
+            // get all with
+            $payload = '$table->primary([\'' . $primaryKeys->join('\', \'') . '\']);';
+            $strings = $strings->add($payload);
+        }
+
+        return $strings->values()->join("\n");
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Acadea\Boilerplate\Commands;
 
-use Acadea\Boilerplate\Commands\traits\ParseModel;
+use Acadea\Boilerplate\Commands\Traits\ParseModel;
 use Acadea\Fixer\Facade\Fixer;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -31,7 +31,7 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
      *
      * @var string
      */
-    protected $signature = 'boilerplate:test {name} {--model= : The model that this repo based on.}';
+    protected $signature = 'boilerplate:test {name} {--model= : The model that this repo based on.} {--force= : Force to regenerate test file}';
 
     /**
      * The console command description.
@@ -49,7 +49,7 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
      */
     public function handle()
     {
-        parent::handle();
+        return tap(parent::handle(), fn ($result) => dump("Created Test {$this->qualifyClass($this->getNameInput())}"));
     }
 
     /**
@@ -83,7 +83,7 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
             // get model from name
             $name = $this->getNameInput();
             ;
-            throw_if(substr($name, -7) !== 'ApiTest', InvalidArgumentException::class, "Name should follow the convention: {model}ApiTest");
+            throw_if(substr($name, -7) !== 'ApiTest', InvalidArgumentException::class, "Name should follow the convention: {model}ApiTest, got: {$name}");
 
             return str_replace('ApiTest', "", $name);
         }
@@ -134,6 +134,7 @@ class TestMakeCommand extends \Illuminate\Foundation\Console\TestMakeCommand
     {
         return [
             ['model', 'm', InputOption::VALUE_REQUIRED, 'The model that this repository is based on.'],
+            ['force', 'f', InputOption::VALUE_OPTIONAL, 'Force to regenerate test file.'],
         ];
     }
 

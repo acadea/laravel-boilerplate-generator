@@ -2,14 +2,12 @@
 
 namespace Tests\Feature\Api\V1\{{ model }};
 
-use App\Events\Api\{{ model }}\{{ model }}Created;
-use App\Events\Api\{{ model }}\{{ model }}PermanentlyDeleted;
-use App\Events\Api\{{ model }}\{{ model }}Updated;
+use App\Events\Models\{{ model }}\{{ model }}Created;
+use App\Events\Models\{{ model }}\{{ model }}PermanentlyDeleted;
+use App\Events\Models\{{ model }}\{{ model }}Updated;
 use App\Models\{{ model }};
 use App\Repositories\Api\V1\{{ model }}Repository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
@@ -41,10 +39,9 @@ class {{ model }}ApiTest extends ApiTestCase
 
         $response->assertStatus(200);
 
-
         /* test sort */
         $repo = new {{ model }}Repository;
-        $sortableFields = $repo->allowedSorts;
+        $sortableFields = $repo->getAllowedSorts();
 
         if(!empty($sortableFields)){
             collect($sortableFields)->each(function ($sortable){
@@ -61,13 +58,10 @@ class {{ model }}ApiTest extends ApiTestCase
                     return $current;
                 });
             });
-
         }
 
-
         /* test filter*/
-
-        $filterables = $repo->allowedFilters;
+        $filterables = $repo->getAllowedFilters();
 
         if(!empty($filterables)){
             collect($filterables)->each(function ($filterable) use($dummy){
@@ -81,13 +75,12 @@ class {{ model }}ApiTest extends ApiTestCase
                     "filter[{$filterable}]" => $dummyValue,
                 ]);
 
-
                 $response = $this->json('get', $this->uri  .'?' . $query);
 
                 $results = $response->assertStatus(200)->json('data');
 
                 collect($results)->each(function ($result)use($filterable, $dummyValue){
-                    $this->assertTrue(data_get($result, $filterable) === $dummyValue );
+                    $this->assertStringContainsStringIgnoringCase($dummyValue, data_get($result, $filterable), 'Filtered not not found.');
                 });
 
 
@@ -126,27 +119,25 @@ class {{ model }}ApiTest extends ApiTestCase
         $result = $response->assertStatus(200)->json('data');
 
         $this->assertEquals(data_get($result, 'id'), $dummy->id);
-
     }
 
     public function test_create()
     {
         Event::fake();
-//        $fillables = collect((new {{ model }})->getFillable());
 
-//        $toFill = $fillables->random();
-//
         $dummy = {{ model }}::factory()->make();
-
 
         $response = $this->json('post', $this->uri, $dummy->toArray());
 
-//        $response->dump();
         $result = $response->assertStatus(201)->json('data');
 
         Event::assertDispatched({{ model }}Created::class);
 
-//        $this->assertTrue(data_get($result, $toFill) === data_get($dummy, $toFill));
+        $result = collect($result)->only(array_keys($dummy->getAttributes()));
+
+        $result->each(function ($value, $field) use($dummy) {
+            $this->assertSame(data_get($dummy, $field), $value, 'Fillable is not same.');
+        });
     }
 
 
