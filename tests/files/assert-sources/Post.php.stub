@@ -12,7 +12,7 @@ class Post extends Model
     protected $fillable = [ 'title','body','options','book_author_id','price','published','tags' ];
 
     protected $casts = [
-        'options' => 'array',
+        'options' => 'array','published' => 'boolean',
     ];
 
     public function comments()

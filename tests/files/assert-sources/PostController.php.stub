@@ -50,8 +50,8 @@ class PostController extends Controller
     /**
      * Store a newly created Post in storage.
      * @bodyParam title required string Post title. Example: Culpa consequatur.
-     * @bodyParam body required mediumText Post body. Example: Consequatur quisquam recusandae asperiores accusamus nihil repellat.
-     * @bodyParam options required json Post options. Example: ["culpa","consequatur","quisquam"]
+     * @bodyParam body mediumText Post body. Example: Consequatur quisquam recusandae asperiores accusamus nihil repellat.
+     * @bodyParam options json Post options. Example: ["culpa","consequatur","quisquam"]
      * @bodyParam book_author_id required foreignId Post book author id. Example: 1
      * @bodyParam price required decimal Post price. Example: 579
      * @bodyParam published required boolean Post published. Example: 1

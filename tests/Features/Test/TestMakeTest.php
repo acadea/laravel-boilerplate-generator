@@ -19,6 +19,7 @@ class TestMakeTest extends TestCase
 
         Artisan::call('boilerplate:test', [
             'name' => 'PostApiTest',
+            '--force' => true,
         ]);
 
         $this->beforeApplicationDestroyed(function () {

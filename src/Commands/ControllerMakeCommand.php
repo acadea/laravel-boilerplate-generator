@@ -152,7 +152,7 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
     private function generateBodyParams($field, $value, $required = true)
     {
         // if attributes contain 'nullable'
-        $nullable = collect(data_get($value, 'attribute'))->contains('nullable');
+        $nullable = collect(data_get($value, 'attributes'))->contains('nullable');
 
         $doc = '@bodyParam ' . $field;
 

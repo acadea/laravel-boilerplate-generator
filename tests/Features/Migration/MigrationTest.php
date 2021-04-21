@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\File;
 
 class MigrationTest extends TestCase
 {
+
+    protected $timePrefix;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -24,6 +27,8 @@ class MigrationTest extends TestCase
             '--create' => 'pivot:post_tag',
         ]);
 
+        $this->timePrefix = now()->format('Y_m_d_His');
+
         $this->beforeApplicationDestroyed(function () {
             File::deleteDirectory($this->app->path('../database/migrations/'));
         });
@@ -31,13 +36,12 @@ class MigrationTest extends TestCase
 
     protected function getTimePrefix()
     {
-        $time = now();
-        $prefix = $time->format('Y_m_d_His');
+        $prefix = $this->timePrefix;
 
         $exist = File::exists($this->app->path('../database/migrations/' . $prefix . '_create_posts_table.php'));
 
         if (! $exist) {
-            return $time->clone()->subSecond()->format('Y_m_d_His');
+            return now()->clone()->subSecond()->format('Y_m_d_His');
         }
 
         return $prefix;

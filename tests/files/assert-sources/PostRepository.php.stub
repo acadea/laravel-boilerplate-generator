@@ -18,7 +18,7 @@ class PostRepository extends BaseRepository
     {
         parent::__construct();
         $this->allowedFilters = [
-            'title', 'body', 'options', 'book_author_id', 'price', 'published',
+            'title', 'body', 'book_author_id', 'price', 'published',
         ];
     }
 

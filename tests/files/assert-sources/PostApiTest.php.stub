@@ -75,13 +75,12 @@ class PostApiTest extends ApiTestCase
                     "filter[{$filterable}]" => $dummyValue,
                 ]);
 
-
                 $response = $this->json('get', $this->uri  .'?' . $query);
 
                 $results = $response->assertStatus(200)->json('data');
 
                 collect($results)->each(function ($result) use ($filterable, $dummyValue) {
-                    $this->assertEquals(data_get($result, $filterable), $dummyValue, 'Filtered not the same.');
+                    $this->assertStringContainsStringIgnoringCase($dummyValue, data_get($result, $filterable), 'Filtered not not found.');
                 });
             });
         }
