@@ -34,7 +34,7 @@ class SeederMakeCommand extends \Illuminate\Database\Console\Seeds\SeederMakeCom
 
     public function handle()
     {
-        return tap(parent::handle(), fn($result) => dump("Created Seeder {$this->qualifyClass($this->getNameInput())}"));
+        return tap(parent::handle(), fn ($result) => dump("Created Seeder {$this->qualifyClass($this->getNameInput())}"));
     }
 
 

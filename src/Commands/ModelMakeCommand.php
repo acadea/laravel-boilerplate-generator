@@ -108,7 +108,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             $this->input->setOption('test', true);
         }
 
-        if($this->option('resource')){
+        if ($this->option('resource')) {
             // create resource class
             $this->call('boilerplate:resource', [
                 'name' => $name . 'Resource',
@@ -116,7 +116,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             ]);
         }
 
-        if($this->option('api-events')){
+        if ($this->option('api-events')) {
             // generate event classes if passed --api-event flag
             $eventClasses = ['Created', 'PermanentlyDeleted', 'Updated', 'Restored', 'Deleted'];
             collect($eventClasses)->each(function ($class) use ($name) {
@@ -129,7 +129,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             });
         }
 
-        if ($this->option('repository')){
+        if ($this->option('repository')) {
             // create repo
             $this->call('boilerplate:repository', [
                 'name' => $name . 'Repository',
@@ -137,7 +137,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             ]);
         }
 
-        if($this->option('route')){
+        if ($this->option('route')) {
             // create routes
             $this->call('boilerplate:route', [
                 'name' => $name,
@@ -163,7 +163,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
             // create requests files
         }
 
-        if($this->option('test')){
+        if ($this->option('test')) {
             $this->call('boilerplate:test', [
                 'name' => "{$name}ApiTest",
                 '--force' => $this->option('force'),
@@ -276,7 +276,7 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $castMap = [
             'timestamp' => 'timestamp',
             'json' => 'array',
-            'boolean' => 'boolean'
+            'boolean' => 'boolean',
         ];
         // cast boolean field
 
@@ -284,9 +284,11 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
         $fields = collect($fields)->filter(function ($field) use ($castMap) {
             // check if field is date time or json
             $type = data_get($field, 'type');
+
             return Arr::has($castMap, $type);
-        })->map(function ($field, $fieldName) use($castMap) {
+        })->map(function ($field, $fieldName) use ($castMap) {
             $cast = data_get($castMap, data_get($field, 'type'));
+
             return '\'' . $fieldName . '\' => \'' . $cast . '\'';
         });
 

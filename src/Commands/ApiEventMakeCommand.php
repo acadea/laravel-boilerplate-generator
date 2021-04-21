@@ -58,7 +58,7 @@ class ApiEventMakeCommand extends GeneratorCommand
      */
     public function handle()
     {
-        return tap(parent::handle(), fn($result) => dump("Created Event {$this->qualifyClass($this->getNameInput())}"));
+        return tap(parent::handle(), fn ($result) => dump("Created Event {$this->qualifyClass($this->getNameInput())}"));
     }
 
     public function buildClass($name)

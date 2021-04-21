@@ -5,7 +5,6 @@ namespace Acadea\Boilerplate\Commands;
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Illuminate\Console\Command;
 use Illuminate\Console\GeneratorCommand;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 

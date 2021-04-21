@@ -53,21 +53,21 @@ class BoilerplateInstallCommand extends GeneratorCommand
         // TODO: create a dummy structure.php file as well
         // load stub and push to exception folder
         $stubs = [
-            '/stubs/preload/json.exception.stub'             => '/app/Exceptions/GeneralJsonException.php',
-            '/stubs/preload/baserepository.stub'             => '/app/Repositories/BaseRepository.php',
+            '/stubs/preload/json.exception.stub' => '/app/Exceptions/GeneralJsonException.php',
+            '/stubs/preload/baserepository.stub' => '/app/Repositories/BaseRepository.php',
             '/stubs/preload/trait.disable-foreign-keys.stub' => '/database/seeders/Traits/DisableForeignKeys.php',
-            '/stubs/preload/trait.truncate-table.stub'       => '/database/seeders/Traits/TruncateTable.php',
-            '/stubs/preload/factory.helpers.stub'            => '/database/factories/helpers/FactoryHelper.php',
-            '/stubs/preload/factory.user.stub'               => '/database/factories/UserFactory.php',
-            '/stubs/preload/factory.role.stub'               => '/database/factories/RoleFactory.php',
-            '/stubs/preload/factory.permission.stub'         => '/database/factories/PermissionFactory.php',
-            '/stubs/preload/test.api-test-case.stub'         => '/tests/ApiTestCase.php',
-            '/stubs/preload/test.test-case.stub'             => '/tests/TestCase.php',
-            '/stubs/preload/model.role.stub'                 => '/app/Models/Role.php',
-            '/stubs/preload/model.permission.stub'           => '/app/Models/Permission.php',
-            '/stubs/preload/api.v1.root.stub'                => '/routes/api/v1.php',
-            '/stubs/preload/route-helpers.stub'              => '/app/Helpers/Routes/RouteHelper.php',
-            '/stubs/preload/api.php.stub'                    => '/routes/api.php',
+            '/stubs/preload/trait.truncate-table.stub' => '/database/seeders/Traits/TruncateTable.php',
+            '/stubs/preload/factory.helpers.stub' => '/database/factories/helpers/FactoryHelper.php',
+            '/stubs/preload/factory.user.stub' => '/database/factories/UserFactory.php',
+            '/stubs/preload/factory.role.stub' => '/database/factories/RoleFactory.php',
+            '/stubs/preload/factory.permission.stub' => '/database/factories/PermissionFactory.php',
+            '/stubs/preload/test.api-test-case.stub' => '/tests/ApiTestCase.php',
+            '/stubs/preload/test.test-case.stub' => '/tests/TestCase.php',
+            '/stubs/preload/model.role.stub' => '/app/Models/Role.php',
+            '/stubs/preload/model.permission.stub' => '/app/Models/Permission.php',
+            '/stubs/preload/api.v1.root.stub' => '/routes/api/v1.php',
+            '/stubs/preload/route-helpers.stub' => '/app/Helpers/Routes/RouteHelper.php',
+            '/stubs/preload/api.php.stub' => '/routes/api.php',
 
         ];
 

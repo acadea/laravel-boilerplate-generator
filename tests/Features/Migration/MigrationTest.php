@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\File;
 
 class MigrationTest extends TestCase
 {
-
     protected $timePrefix;
 
     public function setUp(): void

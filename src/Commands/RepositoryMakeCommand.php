@@ -48,7 +48,7 @@ class RepositoryMakeCommand extends GeneratorCommand
      */
     public function handle()
     {
-        return tap(parent::handle(), fn($result) => dump("Created Repository {$this->qualifyClass($this->getNameInput())}"));
+        return tap(parent::handle(), fn ($result) => dump("Created Repository {$this->qualifyClass($this->getNameInput())}"));
     }
 
     /**
@@ -102,7 +102,7 @@ class RepositoryMakeCommand extends GeneratorCommand
 
         return collect($fields)
 //            ->filter(fn ($field) => data_get($field, 'type') !== 'pivot' )
-            ->filter(fn ($field) => !in_array(data_get($field, 'type'), ['pivot', 'json']) )
+            ->filter(fn ($field) => ! in_array(data_get($field, 'type'), ['pivot', 'json']))
             ->keys()
             ->join('\', \'');
     }

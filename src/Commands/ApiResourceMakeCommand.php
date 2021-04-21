@@ -8,7 +8,6 @@ use Acadea\Fixer\Facade\Fixer;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputOption;
 
 class ApiResourceMakeCommand extends \Illuminate\Foundation\Console\ResourceMakeCommand
@@ -54,7 +53,7 @@ class ApiResourceMakeCommand extends \Illuminate\Foundation\Console\ResourceMake
      */
     public function handle()
     {
-        return tap(parent::handle(), fn($result) => dump("Created Resource {$this->qualifyClass($this->getNameInput())}"));
+        return tap(parent::handle(), fn ($result) => dump("Created Resource {$this->qualifyClass($this->getNameInput())}"));
     }
 
 
@@ -87,6 +86,7 @@ class ApiResourceMakeCommand extends \Illuminate\Foundation\Console\ResourceMake
         if (! class_exists($modelClass)) {
             throw new ModelNotFoundException('Model does not exist. Namespace: ' . $modelClass);
         }
+
         return array_merge($replace, [
             'DummyFullModelClass' => $modelClass,
             '{{ namespacedModel }}' => $modelClass,
@@ -111,7 +111,7 @@ class ApiResourceMakeCommand extends \Illuminate\Foundation\Console\ResourceMake
         $fields = data_get($structure, $model);
 
         return collect($fields)
-            ->map(function ($fieldAttributes, $fieldName){
+            ->map(function ($fieldAttributes, $fieldName) {
                 return "'{$fieldName}' => data_get(\$this, '{$fieldName}'),";
             })
             ->join("\n");

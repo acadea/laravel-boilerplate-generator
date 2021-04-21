@@ -9,7 +9,6 @@ use Acadea\Boilerplate\Utils\SchemaStructure;
 use Acadea\Fixer\Facade\Fixer;
 use Faker\Generator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCommand
@@ -66,7 +65,7 @@ class ControllerMakeCommand extends \Illuminate\Routing\Console\ControllerMakeCo
 
     public function handle()
     {
-        return tap(parent::handle(), fn($result) => dump("Created Controller {$this->qualifyClass($this->getNameInput())}"));
+        return tap(parent::handle(), fn ($result) => dump("Created Controller {$this->qualifyClass($this->getNameInput())}"));
     }
 
 

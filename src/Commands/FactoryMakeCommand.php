@@ -39,7 +39,7 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
 
     public function handle()
     {
-        return tap(parent::handle(), fn($result) => dump("Created Factory {$this->qualifyClass($this->getNameInput())}"));
+        return tap(parent::handle(), fn ($result) => dump("Created Factory {$this->qualifyClass($this->getNameInput())}"));
     }
 
     /**
@@ -99,6 +99,7 @@ class FactoryMakeCommand extends \Illuminate\Database\Console\Factories\FactoryM
             case 'foreignId':
                 $model = substr($fieldName, 0, -3);
                 $model = Str::studly(Str::camel($model));
+
                 return '\Database\Factories\Helpers\FactoryHelper::getRandomModelId(\App\Models\\' . $model . '::class)';
             case 'intArrays':
                 return '[]';

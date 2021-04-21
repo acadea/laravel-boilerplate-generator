@@ -18,7 +18,7 @@ class RouteTest extends TestCase
 
         Artisan::call('boilerplate:route', [
             'name' => 'post',
-            '--model' => 'Post'
+            '--model' => 'Post',
         ]);
 
         $this->beforeApplicationDestroyed(function () {
