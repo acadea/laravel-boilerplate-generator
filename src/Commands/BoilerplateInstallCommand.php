@@ -67,6 +67,7 @@ class BoilerplateInstallCommand extends GeneratorCommand
             '/stubs/preload/model.permission.stub'           => '/app/Models/Permission.php',
             '/stubs/preload/api.v1.root.stub'                => '/routes/api/v1.php',
             '/stubs/preload/route-helpers.stub'              => '/app/Helpers/Routes/RouteHelper.php',
+            '/stubs/preload/api.php.stub'                    => '/routes/api.php',
 
         ];
 
