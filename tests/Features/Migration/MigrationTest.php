@@ -57,7 +57,6 @@ class MigrationTest extends TestCase
 
         // test pivot migration file name
 
-
         $generated = File::get($this->app->path('../database/migrations/' . $this->getTimePrefix() . '_create_post_tag_pivot_table.php'));
 
         $source = File::get(self::TEST_ASSERT_FILES_PATH . '/post_tag_pivot_migration.php.stub');
