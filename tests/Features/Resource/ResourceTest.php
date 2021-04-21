@@ -17,18 +17,11 @@ class ResourceTest extends TestCase
     {
         parent::setUp();
 
-//        Artisan::call('boilerplate:model', [
-//            'name' => 'Post',
-//        ]);
-
-//        require $this->app->path('Models/Post.php');
-
         Artisan::call('boilerplate:resource', [
             'name' => 'PostResource',
         ]);
 
         $this->beforeApplicationDestroyed(function () {
-//            File::delete($this->app->path('Models/Post.php'));
             File::delete($this->app->path($this->mockFilePath));
         });
     }
