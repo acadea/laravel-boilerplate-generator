@@ -23,8 +23,8 @@ class Post extends Model
     {
         return $this->belongsTo(\App\Models\BookAuthor::class, 'book_author_id');
     }
-    public function posts()
+    public function tags()
     {
-        return $this->belongsToMany(\App\Models\Post::class, 'post_tag', 'tag_id', 'post_id');
+        return $this->belongsToMany(\App\Models\Tag::class, 'post_tag', 'post_id', 'tag_id');
     }
 }

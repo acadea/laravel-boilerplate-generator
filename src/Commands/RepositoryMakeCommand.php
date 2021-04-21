@@ -99,8 +99,10 @@ class RepositoryMakeCommand extends GeneratorCommand
     {
         $fields = $this->getSchemaFields();
 
+
         return collect($fields)
-            ->filter(fn ($field) => data_get($field, 'type') !== 'pivot')
+//            ->filter(fn ($field) => data_get($field, 'type') !== 'pivot' )
+            ->filter(fn ($field) => !in_array(data_get($field, 'type'), ['pivot', 'json']) )
             ->keys()
             ->join('\', \'');
     }

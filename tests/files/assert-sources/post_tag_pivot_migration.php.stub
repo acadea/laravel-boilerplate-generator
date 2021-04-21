@@ -13,7 +13,7 @@ class CreatePostTagPivotTable extends Migration
      */
     public function up()
     {
-        Schema::create('pivot:post_tag', function (Blueprint $table) {
+        Schema::create('post_tag', function (Blueprint $table) {
             $table->foreignId('post_id')->index();
             $table->foreign('post_id')->on('posts')->references('id')->cascadeOnDelete();
             $table->foreignId('tag_id')->index();
@@ -29,6 +29,6 @@ class CreatePostTagPivotTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pivot:post_tag');
+        Schema::dropIfExists('post_tag');
     }
 }

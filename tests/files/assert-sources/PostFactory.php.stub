@@ -26,10 +26,9 @@ class PostFactory extends Factory
             'title' => $this->faker->word(),
             'body' => $this->faker->text(),
             'options' => $this->faker->words(3),
-            'book_author_id' => \Factories\Helpers\getRandomModelId(\App\Models\Post::class),
+            'book_author_id' => \Database\Factories\Helpers\FactoryHelper::getRandomModelId(\App\Models\BookAuthor::class),
             'price' => $this->faker->randomFloat(3),
             'published' => \Illuminate\Support\Arr::random([true, false]),
-            'tags' => [],
         ];
     }
 }

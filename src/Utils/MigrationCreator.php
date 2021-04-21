@@ -107,7 +107,7 @@ class MigrationCreator extends \Illuminate\Database\Migrations\MigrationCreator
         if (! is_null($table)) {
             $stub = str_replace(
                 ['DummyTable', '{{ table }}', '{{table}}'],
-                $table,
+                str_replace('pivot:', '', $table), // remove 'pivot:' prefix if exist
                 $stub
             );
 

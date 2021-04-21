@@ -5,6 +5,7 @@ namespace Acadea\Boilerplate\Commands;
 use Acadea\Boilerplate\Commands\Traits\Model\ReplaceRelations;
 use Acadea\Boilerplate\Utils\SchemaStructure;
 use Acadea\Fixer\Facade\Fixer;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputOption;
@@ -272,16 +273,20 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     protected function replaceCasts($stub, $name)
     {
         $fields = $this->getModelFields($name);
+        $castMap = [
+            'timestamp' => 'timestamp',
+            'json' => 'array',
+            'boolean' => 'boolean'
+        ];
+        // cast boolean field
 
         // filter timestamp and json fields
-        $fields = collect($fields)->filter(function ($field) {
+        $fields = collect($fields)->filter(function ($field) use ($castMap) {
             // check if field is date time or json
             $type = data_get($field, 'type');
-
-            return $type === 'timestamp' || $type === 'json';
-        })->map(function ($field, $fieldName) {
-            $cast = data_get($field, 'type') === 'json' ? 'array' : 'timestamp';
-
+            return Arr::has($castMap, $type);
+        })->map(function ($field, $fieldName) use($castMap) {
+            $cast = data_get($castMap, data_get($field, 'type'));
             return '\'' . $fieldName . '\' => \'' . $cast . '\'';
         });
 

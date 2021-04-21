@@ -49,8 +49,8 @@ class PostRepository extends BaseRepository
 
             /** @var Post $post */
             if ($post) {
-                if (data_get($data, 'tag_ids')) {
-                    $post->tags()->sync(data_get($data, 'tag_ids'));
+                if (data_get($data, 'post_ids')) {
+                    $post->tags()->sync(data_get($data, 'post_ids'));
                 }
 
                 event(new PostCreated($post));
@@ -83,8 +83,8 @@ class PostRepository extends BaseRepository
                 'published' => data_get($data, 'published') ?? $post->published,
 
             ])) {
-                if (data_get($data, 'tag_ids')) {
-                    $post->tags()->sync(data_get($data, 'tag_ids'));
+                if (data_get($data, 'post_ids')) {
+                    $post->tags()->sync(data_get($data, 'post_ids'));
                 }
 
                 event(new PostUpdated($post));

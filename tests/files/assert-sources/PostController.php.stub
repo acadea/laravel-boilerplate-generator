@@ -55,7 +55,7 @@ class PostController extends Controller
      * @bodyParam book_author_id required foreignId Post book author id. Example: 1
      * @bodyParam price required decimal Post price. Example: 579
      * @bodyParam published required boolean Post published. Example: 1
-     * @bodyParam tags required pivot Post tags. Example: [1, 2]
+     * @bodyParam tags required pivot Post tags. Example:
      * @apiResource App\Http\Resources\PostResource
      * @apiResourceModel App\Models\Post
      * @param  \Illuminate\Http\Request  $request
@@ -90,7 +90,7 @@ class PostController extends Controller
      * @bodyParam book_author_id required foreignId Post book author id. Example: 1
      * @bodyParam price required decimal Post price. Example: 579
      * @bodyParam published required boolean Post published. Example: 1
-     * @bodyParam tags required pivot Post tags. Example: [1, 2]
+     * @bodyParam tags required pivot Post tags. Example:
      * @urlParam Post required Post ID
      * @apiResource App\Http\Resources\PostResource
      * @apiResourceModel App\Models\Post
