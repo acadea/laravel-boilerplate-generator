@@ -261,11 +261,14 @@ class ModelMakeCommand extends \Illuminate\Foundation\Console\ModelMakeCommand
     protected function replaceFillables($stub, $name)
     {
         // generate the fields
-        $fields = array_keys($this->getModelFields($name));
+        $fillableFields = collect($this->getModelFields($name))
+            ->filter(fn ($field) => data_get($field, 'type') !== 'pivot' )
+            ->keys();
 
-        $fillables = collect($fields)->map(function ($field) {
-            return '\'' . $field . '\'';
-        });
+        $fillables = $fillableFields
+            ->map(function ($field) {
+                return '\'' . $field . '\'';
+            });
 
         return str_replace(['{{ fillables }}', '{{fillables}}'], $fillables->join(','), $stub);
     }

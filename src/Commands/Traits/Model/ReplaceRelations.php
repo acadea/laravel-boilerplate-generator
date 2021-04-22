@@ -44,14 +44,15 @@ trait ReplaceRelations
             '}';
     }
 
-    private function generateBelongsTo($fieldName)
+    private function generateBelongsTo($fieldName, $relationName)
     {
         // fieldname should be snakecase
         $foreignKey = Str::snake(Str::camel($fieldName));
         $exploded = explode('_', $foreignKey);
         // get rid of last element, which is usually 'id'
-        $relationName = implode('_', array_slice($exploded, 0, sizeof($exploded) - 1));
-        $modelName = Str::studly($relationName);
+//        $relationName = implode('_', array_slice($exploded, 0, sizeof($exploded) - 1));
+        $modelName = Str::studly(Str::singular(Str::camel($relationName)));
+        $relationName = Str::snake(Str::camel($modelName));
 
         return $this->generateRelationMethod($relationName, 'belongsTo', $modelName, $foreignKey);
     }
@@ -65,13 +66,11 @@ trait ReplaceRelations
         return $this->generateRelationMethod($relationName, 'hasMany', $modelName, $foreignKey);
     }
 
-    private function generateBelongsToMany($tableName, $foreignKey, $relatedKey)
+    private function generateBelongsToMany($relationName, $tableName, $foreignKey, $relatedKey)
     {
         $relatedKey = Str::snake(Str::camel($relatedKey));
-        $exploded = explode('_', $relatedKey);
 
-        $relationName = implode('_', array_slice($exploded, 0, sizeof($exploded) - 1));
-        $modelName = Str::studly($relationName);
+        $modelName = Str::studly(Str::singular(Str::camel($relationName)));
 
         return $this->generateRelationMethod(Str::plural($relationName), 'belongsToMany', $modelName, $tableName, $foreignKey, $relatedKey);
     }
@@ -97,14 +96,14 @@ trait ReplaceRelations
             $relatedKey = data_get($field, 'pivot.related_key');
             $foreignKey = data_get($field, 'pivot.foreign_key');
 
-            return $this->generateBelongsToMany($tableName, $foreignKey, $relatedKey);
+            return $this->generateBelongsToMany($fieldName, $tableName, $foreignKey, $relatedKey);
         });
 
         $belongsToRelationMethods = collect($fields)->filter(function ($field) {
             return data_get($field, 'foreign');
         })->map(function ($field, $fieldName) use ($name) {
             // fieldName looks something like author_id
-            return $this->generateBelongsTo($fieldName);
+            return $this->generateBelongsTo($fieldName, data_get($field, 'foreign.on'));
         });
 
         $relations = $hasManyRelationMethods
