@@ -57,13 +57,16 @@ trait ReplaceRelations
         return $this->generateRelationMethod($relationName, 'belongsTo', $modelName, $foreignKey);
     }
 
-    private function generateHasMany($foreignKey)
+    private function generateHasMany($relatedModel, $currentModel)
     {
-        $foreignKey = Str::snake(Str::camel($foreignKey));
-        $modelName = Str::studly($foreignKey);
-        $relationName = Str::plural($foreignKey);
+        $relatedModelSnake = Str::snake(Str::camel($relatedModel));
+        $modelName = Str::studly($relatedModelSnake);
+        $relationName = Str::plural($relatedModelSnake);
 
-        return $this->generateRelationMethod($relationName, 'hasMany', $modelName, $foreignKey);
+        // to resolve current model's foreign key
+        $foreign_key = Str::snake(Str::singular(Str::camel($currentModel))) . '_id';
+
+        return $this->generateRelationMethod($relationName, 'hasMany', $modelName, $foreign_key);
     }
 
     private function generateBelongsToMany($relationName, $tableName, $foreignKey, $relatedKey)
@@ -75,6 +78,12 @@ trait ReplaceRelations
         return $this->generateRelationMethod(Str::plural($relationName), 'belongsToMany', $modelName, $tableName, $foreignKey, $relatedKey);
     }
 
+
+    /**
+     * @param $stub
+     * @param $name string the current model name that we are generating
+     * @return array|string|string[]
+     */
     protected function replaceRelations($stub, $name)
     {
         $fields = $this->getModelFields($name);
@@ -83,8 +92,8 @@ trait ReplaceRelations
         // $hasManyModels is an array of models with hasMany relationship to the current model
         $hasManyModels = $this->getRelatedHasManyModels($name);
 
-        $hasManyRelationMethods = collect($hasManyModels)->map(function ($model) {
-            return $this->generateHasMany($model);
+        $hasManyRelationMethods = collect($hasManyModels)->map(function ($relatedModel) use($name) {
+            return $this->generateHasMany($relatedModel, $name);
         });
 
         // generate belongsToMany

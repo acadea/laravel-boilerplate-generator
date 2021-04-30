@@ -58,7 +58,6 @@ class BoilerplateInitCommand extends GeneratorCommand
                 'name' => Str::studly($schema),
                 '--all' => true,
                 '--force' => $this->option('force'),
-//                '--force' => true,
                 '--api' => true,
             ]);
         }
