@@ -116,7 +116,7 @@ class RepositoryMakeCommand extends GeneratorCommand
                 return data_get($field, 'type') === 'pivot';
             })
             ->map(function ($field, $fieldName) {
-                $foreignKey = Str::plural(data_get($field, 'pivot.foreign_key'));
+                $foreignKey = Str::plural(data_get($field, 'pivot.related_key'));
 
                 return 'if(data_get($data, \'' . $foreignKey . '\')){' . "\n" .
                     '$' . $this->modelVariable() . '->' . $fieldName . '()->sync(data_get($data, \'' . $foreignKey . '\'));' . "\n" .
